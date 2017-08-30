@@ -1,0 +1,26 @@
+{
+  "name": "iot_client",
+  "version": "1.0.0",
+  "description": "ES6 client for IoT backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmontes11/iot_client.git"
+  },
+  "keywords": [
+    "js",
+    "javacript",
+    "es6",
+    "nodejs",
+    "iot"
+  ],
+  "author": "Martín Montes <martin11lrx@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mmontes11/iot_client/issues"
+  },
+  "homepage": "https://github.com/mmontes11/iot_client#readme"
+}
