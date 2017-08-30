@@ -28,7 +28,8 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "gulp && export NODE_ENV=test && mocha --reporter spec --timeout 5000 dist/test"
+    "transpile": "git submodule foreach gulp && gulp",
+    "test": "npm run transpile && export NODE_ENV=test && mocha --reporter spec --timeout 5000 dist/test"
   },
   "repository": {
     "type": "git",
