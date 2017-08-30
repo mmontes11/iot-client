@@ -8,18 +8,21 @@ const plugins = gulpLoadPlugins();
 
 const paths = {
     js: ['./**/*.js', '!dist/**', '!node_modules/**', '!iot_backend/**'],
-    nonJs: ['./package.json', './.gitignore']
+    nonJs: ['./package.json']
 };
 
 gulp.task('clean', () =>
-    del(['dist/**', 'coverage/**', '!dist', '!coverage'])
+    del(['dist/**', '!dist'])
 );
 
-gulp.task('copy', () =>
-    gulp.src(paths.nonJs)
+gulp.task('copy', () => {
+    gulp.src([...paths.nonJs])
         .pipe(plugins.newer('dist'))
-        .pipe(gulp.dest('dist'))
-);
+        .pipe(gulp.dest('dist'));
+    gulp.src('iot_backend/dist/**')
+        .pipe(plugins.newer('dist/iot_backend'))
+        .pipe(gulp.dest('dist/iot_backend'));
+});
 
 gulp.task('babel', () =>
     gulp.src([...paths.js, '!gulpfile.babel.js'], {base: '.'})
