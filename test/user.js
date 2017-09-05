@@ -11,8 +11,7 @@ describe('User', () => {
 
     describe('User service', () => {
         it('creates a user', (done) => {
-            client.userService.createUser(constants.validUser).should.be.fulfilled;
-            done();
+            client.userService.createUser(constants.validUser).should.be.notify(done);
         });
     });
 
