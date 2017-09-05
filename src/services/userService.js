@@ -1,6 +1,5 @@
 import rest from 'restler';
 import { URLBuilder } from '../helpers/urlBuilder';
-import { RequestOptions } from "../models/requestOptions"
 
 export class UserService {
     constructor(host, basicAuthCredentials, credentials) {
