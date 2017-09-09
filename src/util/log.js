@@ -9,7 +9,10 @@ export class Log {
             winston.info('Request:');
             winston.info(`${request.options.method} ${request.url.href}`);
             winston.info('Headers:');
-            winston.info(`${JSON.stringify(request.options.headers)}`);
+            winston.info(`${this._prettyPrintJSON(request.headers)}`);
         }
+    }
+    _prettyPrintJSON(json) {
+        return JSON.stringify(json, undefined, 2);
     }
 }

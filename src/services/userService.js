@@ -1,6 +1,6 @@
 import rest from 'restler';
 import { Service } from './service';
-import { HTTPMethod } from '../models/HTTPMethod';
+import { HTTPMethod } from '../models/httpMethod';
 
 export class UserService extends Service {
     constructor(host, basicAuthCredentials, debug) {
@@ -12,15 +12,6 @@ export class UserService extends Service {
             username: this.basicAuthCredentials.username,
             password: this.basicAuthCredentials.password,
         };
-        const request = super.createRequest(HTTPMethod.POST, options, user);
-        return new Promise(function(resolve, reject) {
-            request
-                .on('success', (data) => {
-                    resolve(data);
-                })
-                .on('error', (err) => {
-                    reject(err);
-                })
-        });
+        return this.createRequest(HTTPMethod.POST, options, user);
     }
 }
