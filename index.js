@@ -1,10 +1,12 @@
 import { Credentials } from './src/models/credentials';
 import { UserService } from './src/services/userService';
+import defaultOptions from './config/defaultOptions'
 
 export default class IotClient {
-    constructor(host, basicAuthUser, basicAuthPassword, user, password, debug = true) {
-        const basicAuthCredentials = new Credentials(basicAuthUser, basicAuthPassword);
-        const userCredentials = new Credentials(user, password);
-        this.userService = new UserService(host, basicAuthCredentials, debug);
+    constructor(optionsByParam) {
+        const options = Object.assign({}, defaultOptions, optionsByParam);
+        const basicAuthCredentials = new Credentials(options.basicAuthUser, options.basicAuthPassword);
+        const userCredentials = new Credentials(options.user, options.password);
+        this.userService = new UserService(options.host, basicAuthCredentials, options.headers, options.debug);
     }
 }

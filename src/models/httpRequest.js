@@ -3,7 +3,7 @@ import { HTTPMethod } from './httpMethod';
 import { Log } from '../util/log';
 
 export class HTTPRequest {
-    constructor(method, url, options, data = undefined, debug) {
+    constructor(method, url, options, data, debug) {
         this.method = method;
         this.url = url;
         this.options = options;

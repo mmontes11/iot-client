@@ -8,10 +8,19 @@ import httpStatus from 'http-status';
 
 const assert = chai.assert;
 const should = chai.should();
+const host = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUser = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUser];
-const client = new IotClient(`http://localhost:${serverConfig.nodePort}`, basicAuthUser, basicAuthPassword);
-const clientWithInvalidCredentials = new IotClient(`http://localhost:${serverConfig.nodePort}`, 'foo', 'bar');
+const client = new IotClient({
+    host,
+    basicAuthUser,
+    basicAuthPassword
+});
+const clientWithInvalidCredentials = new IotClient({
+    host,
+    basicAuthUser: 'foo',
+    basicAuthPassword: 'bar'
+});
 
 describe('User', () => {
 

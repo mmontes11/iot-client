@@ -3,8 +3,8 @@ import { Service } from './service';
 import { HTTPMethod } from '../models/httpMethod';
 
 export class UserService extends Service {
-    constructor(host, basicAuthCredentials, debug) {
-        super(host, 'user', debug);
+    constructor(host, basicAuthCredentials, headers, debug) {
+        super(host, 'user', headers, debug);
         this.basicAuthCredentials = basicAuthCredentials;
     }
     createUser(user) {
