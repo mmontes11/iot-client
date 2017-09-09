@@ -34,14 +34,53 @@ describe('User', () => {
     describe('POST /user 401', () => {
         it('tries to create a user with invalid credentials', (done) => {
             const promise = clientWithInvalidCredentials.userService.createUser(constants.validUser);
-            promise.should.eventually.have.property('statusCode', httpStatus.UNAUTHORIZED)
-                .and.should.be.rejected.notify(done);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
+                .and.notify(done);
         })
+    });
+
+    describe('POST /user 400', () => {
+        it('tries to create an invalid user', (done) => {
+            const promise = client.userService.createUser(constants.invalidUser);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.BAD_REQUEST)
+                .and.notify(done);
+        });
+    });
+
+    describe('POST /user 400', () => {
+        it('tries to create a user with weak password', (done) => {
+            const promise = client.userService.createUser(constants.userWithWeakPassword);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.BAD_REQUEST)
+                .and.notify(done);
+        });
+    });
+
+    describe('POST /user && POST /user', () => {
+        it('creates the same user twice', (done) => {
+            client.userService.createUser(constants.validUser)
+                .then(() => {
+                    const promise = client.userService.createUser(constants.validUser);
+                    promise
+                        .should.eventually.be.rejected
+                        .and.have.property('statusCode', httpStatus.CONFLICT)
+                        .and.notify(done);
+                })
+                .catch((err) => {
+                    done(err);
+                })
+        });
     });
 
     describe('POST /user', () => {
         it('creates an user', (done) => {
-            client.userService.createUser(constants.validUser).should.be.fulfilled.notify(done);
+            const promise = client.userService.createUser(constants.validUser);
+            promise.should.eventually.be.fulfilled.notify(done);
         });
     });
 
