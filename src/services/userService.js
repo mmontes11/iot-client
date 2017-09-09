@@ -1,20 +1,20 @@
 import rest from 'restler';
-import { URLBuilder } from '../helpers/urlBuilder';
+import { Service } from './service';
+import { HTTPMethod } from '../models/HTTPMethod';
 
-export class UserService {
-    constructor(host, basicAuthCredentials, credentials) {
-        this.urlBuilder = new URLBuilder(host, 'user');
+export class UserService extends Service {
+    constructor(host, basicAuthCredentials, debug) {
+        super(host, 'user', debug);
         this.basicAuthCredentials = basicAuthCredentials;
-        this.credentials = credentials;
     }
     createUser(user) {
-        const createUserUrl = this.urlBuilder.resourceUrl;
         const options = {
             username: this.basicAuthCredentials.username,
-            password: this.basicAuthCredentials.password
+            password: this.basicAuthCredentials.password,
         };
+        const request = super.createRequest(HTTPMethod.POST, options, user);
         return new Promise(function(resolve, reject) {
-            rest.postJson(createUserUrl, user, options)
+            request
                 .on('success', (data) => {
                     resolve(data);
                 })

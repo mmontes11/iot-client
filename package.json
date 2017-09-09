@@ -52,6 +52,8 @@
     "chai-as-promised": "^7.1.1",
     "iot_backend": "file:iot_backend",
     "mocha": "^3.5.0",
-    "restler": "^3.4.0"
+    "restler": "^3.4.0",
+    "underscore": "^1.8.3",
+    "winston": "^2.3.1"
   }
 }
