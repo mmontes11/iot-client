@@ -1,13 +1,13 @@
 export default {
     validUser: {
-        userName: 'mmontes',
+        username: 'mmontes',
         password: 'aA12345678&'
     },
     invalidUser: {
         password: 'aA12345678&'
     },
     userWithWeakPassword: {
-        userName: 'testUser',
+        username: 'testUser',
         password: '1234'
     }
 };

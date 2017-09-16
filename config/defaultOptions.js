@@ -1,8 +1,8 @@
 export default {
     host: 'localhost:8000',
-    basicAuthUser: 'admin',
+    basicAuthUsername: 'admin',
     basicAuthPassword: 'admin',
-    user: 'admin',
+    username: 'admin',
     password: 'admin',
     headers: {
         'Accept': 'application/json',

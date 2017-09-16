@@ -9,17 +9,23 @@ import httpStatus from 'http-status';
 const assert = chai.assert;
 const should = chai.should();
 const host = `http://localhost:${serverConfig.nodePort}`;
-const basicAuthUser = Object.keys(serverConfig.basicAuthUsers)[0];
-const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUser];
+const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
+const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
+const username = constants.validUser.username;
+const password = constants.validUser.password;
 const client = new IotClient({
     host,
-    basicAuthUser,
-    basicAuthPassword
+    basicAuthUsername,
+    basicAuthPassword,
+    username,
+    password
 });
 const clientWithInvalidCredentials = new IotClient({
     host,
-    basicAuthUser: 'foo',
-    basicAuthPassword: 'bar'
+    basicAuthUsername: 'foo',
+    basicAuthPassword: 'bar',
+    username: 'foo',
+    password: 'bar'
 });
 
 describe('User', () => {
@@ -77,10 +83,30 @@ describe('User', () => {
         });
     });
 
-    describe('POST /user', () => {
-        it('creates an user', (done) => {
-            const promise = client.userService.createUser(constants.validUser);
-            promise.should.eventually.be.fulfilled.notify(done);
+    describe('POST /user && POST /user/logIn', () => {
+        it('creates a user and logs in', (done) => {
+            client.userService.createUser(constants.validUser)
+                .then(() => {
+                    const promise = client.userService.logIn();
+                    promise
+                        .should.eventually.be.fulfilled
+                        .and.have.property('token')
+                        .and.notify(done);
+
+                })
+                .catch((err) => {
+                    done(err);
+                })
+        });
+    });
+
+    describe('POST /user/logIn', () => {
+        it('tries to log in with a non existing user', (done) => {
+            const promise = clientWithInvalidCredentials.userService.logIn();
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
+                .and.notify(done);
         });
     });
 
