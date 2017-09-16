@@ -15,14 +15,14 @@ export class UserService extends Service {
             password: this.basicAuthCredentials.password,
         };
         const requestParams = new HTTPRequestParams(HTTPMethod.POST, undefined, options, user);
-        return this.createRequest(requestParams);
+        return this.request(requestParams, false);
     }
     logIn() {
         const user = {
             username: this.userCredentials.username,
             password: this.userCredentials.password
         };
-        const requestParams = new HTTPRequestParams(HTTPMethod.POST, '/logIn', undefined, user);
-        return this.createRequest(requestParams);
+        const requestParams = new HTTPRequestParams(HTTPMethod.POST, 'logIn', undefined, user);
+        return this.request(requestParams, false);
     }
 }
