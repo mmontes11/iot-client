@@ -1,6 +1,7 @@
 import rest from 'restler';
 import { Service } from './service';
 import { HTTPMethod } from '../models/httpMethod';
+import { HTTPRequestParams } from '../models/httpRequestParams';
 
 export class UserService extends Service {
     constructor(host, basicAuthCredentials, userCredentials, headers, debug) {
@@ -13,13 +14,15 @@ export class UserService extends Service {
             username: this.basicAuthCredentials.username,
             password: this.basicAuthCredentials.password,
         };
-        return this.createRequest(HTTPMethod.POST, options, user);
+        const requestParams = new HTTPRequestParams(HTTPMethod.POST, undefined, options, user);
+        return this.createRequest(requestParams);
     }
     logIn() {
         const user = {
             username: this.userCredentials.username,
             password: this.userCredentials.password
         };
-        return this.createRequest(HTTPMethod.POST, null, user, '/logIn');
+        const requestParams = new HTTPRequestParams(HTTPMethod.POST, '/logIn', undefined, user);
+        return this.createRequest(requestParams);
     }
 }

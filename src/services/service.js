@@ -9,15 +9,15 @@ export class Service {
         this.headers = headers;
         this.debug = debug;
     }
-    createRequest(HTTPMethod, optionsByParam, data, path) {
+    createRequest(requestParams) {
         let url;
-        if (_.isUndefined(path)) {
+        if (_.isUndefined(requestParams.path)) {
             url = this.urlBuilder.resourceUrl
         } else {
-            url = this.urlBuilder.build(path)
+            url = this.urlBuilder.build(requestParams.path)
         }
-        const options = Object.assign({}, { headers: this.headers }, optionsByParam);
-        const httpRequest = new HTTPRequest(HTTPMethod, url, options, data, this.debug);
+        const options = Object.assign({}, { headers: this.headers }, requestParams.options);
+        const httpRequest = new HTTPRequest(requestParams.method, url, options, requestParams.data, this.debug);
         return httpRequest.start();
     }
 }
