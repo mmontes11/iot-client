@@ -4,17 +4,17 @@ import { URLBuilder } from '../helpers/urlBuilder';
 import { HTTPRequest } from '../models/httpRequest';
 
 export class Service {
-    constructor(host, resource, headers, authService, debug) {
+    constructor(client, host, resource, headers, debug) {
+        this.client = client;
         this.urlBuilder = new URLBuilder(host, resource);
         this.headers = headers;
-        this.authService = authService;
         this.debug = debug;
     }
     async request(requestParams, includeToken) {
         let token = undefined;
-        if (includeToken && !_.isUndefined(this.authService)) {
+        if (includeToken) {
             try {
-                token = this.authService.getToken();
+                token = client.authService.getToken();
             } catch (err) {
                 throw err;
             }

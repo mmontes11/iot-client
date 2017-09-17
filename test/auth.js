@@ -2,9 +2,7 @@ import chai from '../lib/chai';
 import server from '../iot_backend/index';
 import serverConfig from '../iot_backend/config/index';
 import { UserModel } from '../iot_backend/src/models/db/user';
-import { Credentials } from '../src/models/credentials';
-import { UserService } from '../src/services/userService';
-import { AuthService } from '../src/services/authService';
+import IotClient from '../index';
 import constants from './constants';
 import defaultOptions from '../config/defaultOptions'
 
@@ -14,23 +12,30 @@ const host = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
 const username = constants.validUser.username;
-const password = constants.validUser.password;
-const basicAuthCredentials = new Credentials(basicAuthUsername, basicAuthPassword);
-const userCredentials = new Credentials(username, password);
-const invalidCredentials = new Credentials('foo', 'bar');
-const userService = new UserService(host, basicAuthCredentials, userCredentials, defaultOptions.headers, undefined, defaultOptions.debug);
-const userServiceWithInvalidCredentials = new UserService(host, invalidCredentials, invalidCredentials, defaultOptions.headers, undefined, defaultOptions.debug);
-const authService = new AuthService(userService);
-const authServiceWithInvalidCredentials = new AuthService(userServiceWithInvalidCredentials);
+;const password = constants.validUser.password;
+const client = new IotClient({
+    host,
+    basicAuthUsername,
+    basicAuthPassword,
+    username,
+    password
+});
+const clientWithInvalidCredentials = new IotClient({
+    host,
+    basicAuthUsername: 'foo',
+    basicAuthPassword: 'bar',
+    username: 'foo',
+    password: 'bar'
+});
 
 describe('Auth', () => {
 
     beforeEach((done) => {
-        AuthService.invalidateToken();
-        assert(AuthService.getTokenFromStorage() === undefined, 'Token should be undefined');
+        client.authService.invalidateToken();
+        assert(client.authService.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
-            userService.createUser(constants.validUser)
+            client.userService.createUser(constants.validUser)
                 .then(() => {
                     done();
                 })
@@ -41,24 +46,24 @@ describe('Auth', () => {
     });
 
     it('gets a token for an user with invalid credentials', (done) => {
-        authServiceWithInvalidCredentials.getToken()
+        clientWithInvalidCredentials.authService.getToken()
             .then((token) => {
                 done(new Error('Promise should be rejected'));
             })
             .catch((err) => {
                 should.exist(err);
-                should.not.exist(AuthService.getTokenFromStorage());
+                should.not.exist(clientWithInvalidCredentials.authService.getTokenFromStorage());
                 done();
             });
     });
 
     it('gets a token for a valid user', (done) => {
-        authService.getToken()
+        client.authService.getToken()
             .then((token) => {
-                token.should.be.equal(AuthService.getTokenFromStorage());
-                authService.getToken()
+                token.should.be.equal(client.authService.getTokenFromStorage());
+                client.authService.getToken()
                     .then((token) => {
-                        token.should.be.equal(AuthService.getTokenFromStorage());
+                        token.should.be.equal(client.authService.getTokenFromStorage());
                         done();
                     })
                     .catch((err) => {
@@ -71,11 +76,11 @@ describe('Auth', () => {
     });
 
     it('gets a token for a valid user and deletes it', (done) => {
-        authService.getToken()
+        client.authService.getToken()
             .then((token) => {
-                token.should.be.equal(AuthService.getTokenFromStorage());
-                AuthService.invalidateToken();
-                should.not.exist(AuthService.getTokenFromStorage());
+                token.should.be.equal(client.authService.getTokenFromStorage());
+                client.authService.invalidateToken();
+                should.not.exist(client.authService.getTokenFromStorage());
                 done();
             })
             .catch((err) => {
