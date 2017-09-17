@@ -8,7 +8,7 @@ export default class IotClient {
         const options = Object.assign({}, defaultOptions, optionsByParam);
         const basicAuthCredentials = new Credentials(options.basicAuthUsername, options.basicAuthPassword);
         const userCredentials = new Credentials(options.username, options.password);
-        this.userService = new UserService(this, options.host, basicAuthCredentials, userCredentials, options.headers, undefined, options.debug);
+        this.userService = new UserService(this, options.host, basicAuthCredentials, userCredentials, options.headers, options.debug);
         this.authService = new AuthService(this);
     }
 }
