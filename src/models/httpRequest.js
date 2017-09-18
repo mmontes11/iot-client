@@ -3,12 +3,13 @@ import { HTTPMethod } from './httpMethod';
 import { Log } from '../util/log';
 
 export class HTTPRequest {
-    constructor(method, url, options, data, debug) {
+    constructor(method, url, options, data, log) {
+        this.id = (new Date()).getTime();
         this.method = method;
         this.url = url;
         this.options = options;
         this.data = data;
-        this.log = new Log(debug);
+        this.log = log;
     }
     _createRequest() {
         switch (this.method) {
@@ -29,13 +30,17 @@ export class HTTPRequest {
     }
     start() {
         const request = this._createRequest();
-        this.log.logRequest(request);
-        return new Promise(function(resolve, reject) {
+        const requestId = this.id;
+        const log = this.log;
+        log.logRequest(request, requestId);
+        return new Promise((resolve, reject) => {
             request
                 .on('success', (data, res) => {
+                    log.logResponse(res, data, requestId);
                     resolve(data);
                 })
                 .on('fail', (data, res) => {
+                    log.logResponse(res, data, requestId);
                     reject(res);
                 })
                 .on('error', (err, res) => {

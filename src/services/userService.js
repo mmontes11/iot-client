@@ -4,8 +4,8 @@ import { HTTPMethod } from '../models/httpMethod';
 import { HTTPRequestParams } from '../models/httpRequestParams';
 
 export class UserService extends Service {
-    constructor(client, host, basicAuthCredentials, userCredentials, headers, debug) {
-        super(client, host, 'user', headers, debug);
+    constructor(client, host, basicAuthCredentials, userCredentials, headers) {
+        super(client, host, 'user', headers);
         this.basicAuthCredentials = basicAuthCredentials;
         this.userCredentials = userCredentials;
     }

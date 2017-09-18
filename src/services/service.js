@@ -4,11 +4,10 @@ import { URLBuilder } from '../helpers/urlBuilder';
 import { HTTPRequest } from '../models/httpRequest';
 
 export class Service {
-    constructor(client, host, resource, headers, debug) {
+    constructor(client, host, resource, headers) {
         this.client = client;
         this.urlBuilder = new URLBuilder(host, resource);
         this.headers = headers;
-        this.debug = debug;
     }
     async request(requestParams, includeToken) {
         let token = undefined;
@@ -34,6 +33,6 @@ export class Service {
             accessToken: token
         };
         const options = Object.assign({}, serviceOptions, requestParams.options);
-        return new HTTPRequest(requestParams.method, url, options, requestParams.data, this.debug);
+        return new HTTPRequest(requestParams.method, url, options, requestParams.data, this.client.log);
     }
 }
