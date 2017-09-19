@@ -35,13 +35,21 @@ export class HTTPRequest {
         log.logRequest(request, requestId);
         return new Promise((resolve, reject) => {
             request
-                .on('success', (data, res) => {
-                    log.logResponse(res, data, requestId);
-                    resolve(data);
+                .on('success', (data, response) => {
+                    log.logResponse(response, data, requestId);
+                    resolve({
+                        statusCode: response.statusCode,
+                        headers: response.headers,
+                        data
+                    });
                 })
-                .on('fail', (data, res) => {
-                    log.logResponse(res, data, requestId);
-                    reject(res);
+                .on('fail', (data, response) => {
+                    log.logResponse(response, data, requestId);
+                    reject({
+                        statusCode: response.statusCode,
+                        headers: response.headers,
+                        data
+                    });
                 })
                 .on('error', (err, res) => {
                     reject(err);

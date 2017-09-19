@@ -32,6 +32,8 @@ const clientWithInvalidCredentials = new IotClient({
 describe('User', () => {
 
     before((done) => {
+        client.authService.invalidateToken();
+        assert(client.authService.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
             client.userService.create(constants.validUser)
@@ -47,9 +49,10 @@ describe('User', () => {
     describe('POST /measurement', () => {
         it('creates a measurement', (done) => {
             const promise = client.measurementService.create(constants.temperatureMeasurement);
-            promise
-                .should.eventually.be.fulfilled
-                .and.notify(done);
+             promise
+                 .should.eventually.be.fulfilled
+                 .and.have.property('statusCode', httpStatus.CREATED)
+                 .and.notify(done);
         });
     });
 });

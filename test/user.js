@@ -28,6 +28,7 @@ const clientWithInvalidCredentials = new IotClient({
     password: 'bar'
 });
 
+
 describe('User', () => {
 
     beforeEach((done) => {
@@ -90,9 +91,8 @@ describe('User', () => {
                     const promise = client.userService.logIn();
                     promise
                         .should.eventually.be.fulfilled
-                        .and.have.property('token')
+                        .and.have.property('statusCode', httpStatus.OK)
                         .and.notify(done);
-
                 })
                 .catch((err) => {
                     done(err);
@@ -109,4 +109,5 @@ describe('User', () => {
                 .and.notify(done);
         });
     });
+
 });
