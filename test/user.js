@@ -39,7 +39,7 @@ describe('User', () => {
 
     describe('POST /user 401', () => {
         it('tries to create a user with invalid credentials', (done) => {
-            const promise = clientWithInvalidCredentials.userService.createUser(constants.validUser);
+            const promise = clientWithInvalidCredentials.userService.create(constants.validUser);
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
@@ -49,7 +49,7 @@ describe('User', () => {
 
     describe('POST /user 400', () => {
         it('tries to create an invalid user', (done) => {
-            const promise = client.userService.createUser(constants.invalidUser);
+            const promise = client.userService.create(constants.invalidUser);
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.BAD_REQUEST)
@@ -59,7 +59,7 @@ describe('User', () => {
 
     describe('POST /user 400', () => {
         it('tries to create a user with weak password', (done) => {
-            const promise = client.userService.createUser(constants.userWithWeakPassword);
+            const promise = client.userService.create(constants.userWithWeakPassword);
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.BAD_REQUEST)
@@ -69,9 +69,9 @@ describe('User', () => {
 
     describe('POST /user && POST /user', () => {
         it('creates the same user twice', (done) => {
-            client.userService.createUser(constants.validUser)
+            client.userService.create(constants.validUser)
                 .then(() => {
-                    const promise = client.userService.createUser(constants.validUser);
+                    const promise = client.userService.create(constants.validUser);
                     promise
                         .should.eventually.be.rejected
                         .and.have.property('statusCode', httpStatus.CONFLICT)
@@ -85,7 +85,7 @@ describe('User', () => {
 
     describe('POST /user && POST /user/logIn', () => {
         it('creates a user and logs in', (done) => {
-            client.userService.createUser(constants.validUser)
+            client.userService.create(constants.validUser)
                 .then(() => {
                     const promise = client.userService.logIn();
                     promise
@@ -107,12 +107,6 @@ describe('User', () => {
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
                 .and.notify(done);
-        });
-    });
-
-    after((done) => {
-        server.close((err) => {
-            done(err);
         });
     });
 });

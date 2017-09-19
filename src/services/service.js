@@ -12,7 +12,7 @@ export class Service {
         let token = undefined;
         if (includeToken) {
             try {
-                token = this.client.authService.getToken();
+                token = await this.client.authService.getToken();
             } catch (err) {
                 throw err;
             }

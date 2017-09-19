@@ -1,6 +1,7 @@
 import { Credentials } from './src/models/credentials';
-import { UserService } from './src/services/userService';
 import { AuthService } from './src/services/authService';
+import { UserService } from './src/services/userService';
+import { MeasurementService } from "./src/services/measurementService"
 import { Log } from './src/util/log';
 import defaultOptions from './config/defaultOptions'
 
@@ -12,7 +13,8 @@ export default class IotClient {
         this.userCredentials = new Credentials(options.username, options.password);
         this.headers = options.headers;
         this.log = new Log(options.debug);
-        this.userService = new UserService(this);
         this.authService = new AuthService(this);
+        this.userService = new UserService(this);
+        this.measurementService = new MeasurementService(this);
     }
 }

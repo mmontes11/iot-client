@@ -7,7 +7,7 @@ export class UserService extends Service {
         super(client, 'user');
         this.client = client;
     }
-    createUser(user) {
+    async create(user) {
         const options = {
             username: this.client.basicAuthCredentials.username,
             password: this.client.basicAuthCredentials.password,
@@ -15,7 +15,7 @@ export class UserService extends Service {
         const requestParams = new HTTPRequestParams(HTTPMethod.POST, undefined, options, user);
         return this.request(requestParams, false);
     }
-    logIn() {
+    async logIn() {
         const user = {
             username: this.client.userCredentials.username,
             password: this.client.userCredentials.password

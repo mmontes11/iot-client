@@ -6,7 +6,7 @@ export class ObservationService extends Service {
     constructor(client, resource) {
         super(client, resource);
     }
-    createObservation(observation) {
+    async create(observation) {
         const requestParams = new HTTPRequestParams(HTTPMethod.POST, undefined, undefined, observation);
         return this.request(requestParams, true);
     }

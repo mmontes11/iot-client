@@ -35,7 +35,7 @@ describe('Auth', () => {
         assert(client.authService.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
-            client.userService.createUser(constants.validUser)
+            client.userService.create(constants.validUser)
                 .then(() => {
                     done();
                 })
