@@ -1,6 +1,6 @@
 export class URLBuilder {
-    constructor(host, restResource) {
-        this.resourceUrl = `${host}/api/${restResource}`;
+    constructor(host, resource) {
+        this.resourceUrl = `${host}/api/${resource}`;
     }
     build(path) {
         return `${this.resourceUrl}/${path}`

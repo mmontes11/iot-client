@@ -7,10 +7,12 @@ import defaultOptions from './config/defaultOptions'
 export default class IotClient {
     constructor(optionsByParam) {
         const options = Object.assign({}, defaultOptions, optionsByParam);
-        const basicAuthCredentials = new Credentials(options.basicAuthUsername, options.basicAuthPassword);
-        const userCredentials = new Credentials(options.username, options.password);
+        this.host = options.host;
+        this.basicAuthCredentials = new Credentials(options.basicAuthUsername, options.basicAuthPassword);
+        this.userCredentials = new Credentials(options.username, options.password);
+        this.headers = options.headers;
         this.log = new Log(options.debug);
-        this.userService = new UserService(this, options.host, basicAuthCredentials, userCredentials, options.headers);
+        this.userService = new UserService(this);
         this.authService = new AuthService(this);
     }
 }

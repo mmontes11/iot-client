@@ -4,16 +4,15 @@ import { URLBuilder } from '../helpers/urlBuilder';
 import { HTTPRequest } from '../models/httpRequest';
 
 export class Service {
-    constructor(client, host, resource, headers) {
+    constructor(client, resource) {
         this.client = client;
-        this.urlBuilder = new URLBuilder(host, resource);
-        this.headers = headers;
+        this.urlBuilder = new URLBuilder(this.client.host, resource);
     }
     async request(requestParams, includeToken) {
         let token = undefined;
         if (includeToken) {
             try {
-                token = client.authService.getToken();
+                token = this.client.authService.getToken();
             } catch (err) {
                 throw err;
             }
@@ -29,7 +28,7 @@ export class Service {
             url = this.urlBuilder.build(requestParams.path)
         }
         const serviceOptions = {
-            headers: this.headers,
+            headers: this.client.headers,
             accessToken: token
         };
         const options = Object.assign({}, serviceOptions, requestParams.options);
