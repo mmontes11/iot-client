@@ -29,11 +29,11 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run transpile && export NODE_ENV=test && mocha --reporter spec --timeout 5000 dist/test",
-    "transpile": "git submodule foreach npm run transpile && gulp"
+    "transpile": "gulp"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mmontes11/iot_client.git"
+    "url": "https://github.com/mmontes11/iot_client"
   },
   "keywords": [
     "js",
