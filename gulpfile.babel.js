@@ -19,9 +19,6 @@ gulp.task('copy', () => {
     gulp.src([...paths.nonJs])
         .pipe(plugins.newer('dist'))
         .pipe(gulp.dest('dist'));
-    gulp.src('iot_backend/dist/**')
-        .pipe(plugins.newer('dist/iot_backend'))
-        .pipe(gulp.dest('dist/iot_backend'));
 });
 
 gulp.task('babel', () =>
