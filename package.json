@@ -28,8 +28,9 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "npm run transpile && export NODE_ENV=test && mocha --reporter spec --timeout 5000 dist/test",
-    "transpile": "gulp"
+    "test": "npm run transpile-server && npm run transpile && export NODE_ENV=test && mocha --reporter spec --timeout 5000 dist/test",
+    "transpile": "gulp",
+    "transpile-server": "cd test/iot_backend && npm run transpile && cd -"
   },
   "repository": {
     "type": "git",
