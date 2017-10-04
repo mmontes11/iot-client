@@ -4,8 +4,10 @@ import _ from 'underscore';
 const tokenKey = 'token';
 
 export class AuthService {
-    constructor(client) {
+    constructor(client, basicAuthCredentials, userCredentials) {
         this.client = client;
+        this.basicAuthCredentials = basicAuthCredentials;
+        this.userCredentials = userCredentials;
     }
     async getToken() {
         const tokenFromStorage = this.getTokenFromStorage();
