@@ -23,7 +23,10 @@ export default {
             }
         ],
         type: 'temperature',
-        units: 'degrees',
+        unit: {
+            name: 'degrees',
+            symbol: '°C'
+        },
         value: 10
     },
     temperatureMeasurement2: {
@@ -39,7 +42,10 @@ export default {
             }
         ],
         type: 'temperature',
-        units: 'degrees',
+        unit: {
+            name: 'degrees',
+            symbol: '°C'
+        },
         value: 15
     },
     humidityMeasurement: {
@@ -55,7 +61,10 @@ export default {
             }
         ],
         type: 'humidity',
-        units: 'relative',
+        unit: {
+            name: 'relative',
+            symbol: '%'
+        },
         value: 0.3
     },
     humidityMeasurement2: {
@@ -71,11 +80,147 @@ export default {
             }
         ],
         type: 'humidity',
-        units: 'relative',
+        unit:  {
+            name: 'relative',
+            symbol: '%'
+        },
         value: 0.6
     },
     inValidMeasurement: {
         device: 'raspberry',
         relatedEntities: []
+    },
+    validMeasurementWithKind: {
+        kind: 'measurement',
+        device: 'raspberry',
+        relatedEntities: [
+            {
+                name: 'Home',
+                type: 'building',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [125.6, 10.1]
+                }
+            }
+        ],
+        type: 'temperature',
+        unit: {
+            name: 'degrees',
+            symbol: '°C'
+        },
+        value: 10
+    },
+    invalidMeasurementWithKind: {
+        kind: 'measurement',
+        device: 'raspberry',
+        relatedEntities: [
+            {
+                name: 'Home',
+                type: 'building',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [125.6, 10.1]
+                }
+            }
+        ],
+        type: 'temperature',
+        unit: {
+            name: 'degrees',
+            symbol: '°C'
+        }
+    },
+    validMeasurementWithInvalidKind: {
+        kind: 'foo',
+        device: 'raspberry',
+        relatedEntities: [
+            {
+                name: 'Home',
+                type: 'building',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [125.6, 10.1]
+                }
+            }
+        ],
+        type: 'temperature',
+        unit: {
+            name: 'degrees',
+            symbol: '°C'
+        },
+        value: 10
+    },
+    validEventWithKind: {
+        kind: 'event',
+        creator: {
+            username: 'mmontes',
+            device: 'raspberry'
+        },
+        relatedEntities: [
+            {
+                name: 'Home',
+                type: 'building',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [125.6, 10.1]
+                }
+            }
+        ],
+        type: 'window_opened',
+        duration: {
+            unit:  {
+                name: 'seconds',
+                symbol: 's'
+            },
+            value: 2.4
+        }
+    },
+    invalidEventWithKind: {
+        kind: 'event',
+        creator: {
+            username: 'mmontes',
+            device: 'raspberry'
+        },
+        relatedEntities: [
+            {
+                name: 'Home',
+                type: 'building',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [125.6, 10.1]
+                }
+            }
+        ],
+        duration: {
+            unit:  {
+                name: 'seconds',
+                symbol: 's'
+            },
+            value: 2.4
+        }
+    },
+    validEventWithInvalidKind: {
+        kind: 'bar',
+        creator: {
+            username: 'mmontes',
+            device: 'raspberry'
+        },
+        relatedEntities: [
+            {
+                name: 'Home',
+                type: 'building',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [125.6, 10.1]
+                }
+            }
+        ],
+        type: 'window_opened',
+        duration: {
+            unit:  {
+                name: 'seconds',
+                symbol: 's'
+            },
+            value: 2.4
+        }
     }
 };
