@@ -3,7 +3,7 @@ import server from './iot_backend/index';
 import serverConfig from './iot_backend/config/index';
 import { UserModel } from './iot_backend/src/models/db/user';
 import IotClient from '../index';
-import constants from './constants';
+import constants from './iot_backend/test/constants';
 import defaultOptions from '../config/defaultOptions'
 
 const assert = chai.assert;
