@@ -1,7 +1,9 @@
 import rest from 'restler';
 import _ from 'underscore';
 import { URLBuilder } from '../helpers/urlBuilder';
+import { HTTPMethod } from '../models/httpMethod';
 import { HTTPRequest } from '../models/httpRequest';
+import { HTTPRequestParams } from '../models/httpRequestParams';
 
 export class Service {
     constructor(client, resource) {
@@ -19,6 +21,10 @@ export class Service {
         }
         const httpRequest = this._setupRequest(requestParams, token);
         return await httpRequest.start();
+    }
+    async create(data) {
+        const requestParams = new HTTPRequestParams(HTTPMethod.POST, undefined, undefined, data);
+        return this.request(requestParams, true);
     }
     _setupRequest(requestParams, token) {
         let url;

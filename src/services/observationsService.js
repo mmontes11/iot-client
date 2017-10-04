@@ -1,6 +1,6 @@
-import { ObservationService } from "./observationService"
+import { Service } from "./service"
 
-export class ObservationsService extends ObservationService {
+export class ObservationsService extends Service {
     constructor(client) {
         super(client, 'observations');
     }
