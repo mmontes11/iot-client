@@ -1,4 +1,4 @@
-import winston from '../../lib/winston';
+import winston from '../lib/winston';
 
 export class Log {
     constructor(debug) {

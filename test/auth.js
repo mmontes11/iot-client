@@ -1,10 +1,10 @@
-import chai from '../lib/chai';
-import server from './iot_backend/index';
-import serverConfig from './iot_backend/config/index';
-import { UserModel } from './iot_backend/src/models/db/user';
-import IotClient from '../index';
-import constants from './iot_backend/test/constants';
-import defaultOptions from '../config/defaultOptions'
+import chai from '../src/lib/chai';
+import server from './lib/iot_backend/src/index';
+import serverConfig from './lib/iot_backend/src/config/index';
+import { UserModel } from './lib/iot_backend/src/models/db/user';
+import IotClient from '../src/index';
+import constants from './lib/iot_backend/test/constants/user';
+import defaultOptions from '../src/config/defaultOptions'
 
 const assert = chai.assert;
 const should = chai.should();
@@ -12,7 +12,7 @@ const host = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
 const username = constants.validUser.username;
-;const password = constants.validUser.password;
+const password = constants.validUser.password;
 const client = new IotClient({
     host,
     basicAuthUsername,
