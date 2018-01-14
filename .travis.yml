@@ -10,6 +10,6 @@ cache:
 git:
   depth: 3
 script:
-  - npm
+  - npm test
 after_success:
   - npm run coverage
