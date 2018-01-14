@@ -1,4 +1,4 @@
-import chai from '../src/lib/chai';
+import chai from './lib/chai';
 import server from './lib/iot_backend/src/index';
 import serverConfig from './lib/iot_backend/src/config/index';
 import { UserModel } from './lib/iot_backend/src/models/db/user';
