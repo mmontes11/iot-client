@@ -3,6 +3,7 @@
     "env"
   ],
   "plugins": [
+    "add-module-exports",
     [
       "transform-runtime",
       {
@@ -10,5 +11,12 @@
         "regenerator": true
       }
     ]
-  ]
+  ],
+  "env": {
+    "test": {
+      "plugins": [
+        "istanbul"
+      ]
+    }
+  }
 }

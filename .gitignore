@@ -28,4 +28,10 @@ dist
 node_modules
 package-lock.json
 npm-debug.log*
+
+# Test & Coverage
+.nyc_output
+coverage
+
+# Node persist
 .node-persist
