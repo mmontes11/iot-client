@@ -1,21 +1,22 @@
 {
-  "name": "iot_client",
-  "version": "1.0.0",
+  "name": "@mmontes11/iot_client",
+  "version": "1.0.1",
   "description": "ES6 client for IoT backend",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": false,
   "engines": {
     "node": ">=8.0.0",
     "npm": ">=5.0.0"
   },
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha --timeout 10000 test/",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "clean": "rm -rf dist/*",
     "prebuild": "npm run clean",
     "build": "babel -d dist/ src/",
-    "dist": "npm run build && cp package.json dist/ && cd dist && npm install --production && cd -"
+    "dist": "npm run build && cp package.json dist/ && cd dist && npm install --production && cd -",
+    "prepublish": "npm run dist"
   },
   "repository": {
     "type": "git",
