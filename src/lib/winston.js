@@ -1,18 +1,20 @@
 import winston from 'winston';
 
-winston.remove(winston.transports.Console);
-winston.remove(winston.transports.File);
-
-winston.add(winston.transports.Console, {
-    timestamp: false,
-    json: false,
-    colorize: true
+const logger = new (winston.Logger)({
+    level: 'info',
+    transports: [
+        new winston.transports.Console ({
+            timestamp: false,
+            json: false,
+            colorize: true
+        }),
+        new winston.transports.File({
+            timestamp: true,
+            json: false,
+            colorize: true,
+            filename: 'log_iot_client.log'
+        })
+    ]
 });
-winston.add(winston.transports.File, {
-    timestamp: true,
-    json: false,
-    colorize: true,
-    filename: 'log_iot_client.log'
-});
 
-export default winston;
+export default logger;
