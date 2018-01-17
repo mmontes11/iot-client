@@ -1,6 +1,6 @@
 {
   "name": "@mmontes11/iot_client",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ES6 client for IoT backend",
   "license": "MIT",
   "private": false,
@@ -26,6 +26,7 @@
     "js",
     "javacript",
     "es6",
+    "babel",
     "nodejs",
     "iot"
   ],
