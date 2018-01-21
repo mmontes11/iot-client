@@ -10,3 +10,25 @@ ES6 client library for consuming [IoT backend](https://github.com/mmontes11/iot-
 ```bash
 $ npm install @mmontes11/iot-client
 ```
+
+### Usage example
+
+``` javascript
+const iotClient = new IoTClient({
+  host: 'http://localhost:800',
+  username: 'foo',
+  password: 'bar',
+  basicAuthUsername: 'foo',
+  basicAuthPassword: 'bar'
+});
+
+try {
+  const response = await iotClient.observationsService.create({
+      observations: observations,
+      thing: thing
+  });
+  console.log(response.createdObservations);
+} catch (err) {
+  console.log(err);
+}
+```
