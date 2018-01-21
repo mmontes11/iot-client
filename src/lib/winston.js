@@ -12,7 +12,7 @@ const logger = new (winston.Logger)({
             timestamp: true,
             json: false,
             colorize: true,
-            filename: 'log_iot_client.log'
+            filename: 'log-iot-client.log'
         })
     ]
 });
