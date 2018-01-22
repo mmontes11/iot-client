@@ -1,6 +1,9 @@
 import rest from 'restler';
 import { HTTPMethod } from './httpMethod';
 import { Log } from '../util/log';
+import { AuthService} from "../services/authService"
+import httpStatus from 'http-status';
+import _ from 'underscore';
 
 export class HTTPRequest {
     constructor(method, url, options, data, log) {
@@ -45,6 +48,9 @@ export class HTTPRequest {
                 })
                 .on('fail', (data, response) => {
                     log.logResponse(response, data, requestId);
+                    if (_.isEqual(response.statusCode, httpStatus.UNAUTHORIZED)) {
+                        AuthService.invalidateToken();
+                    }
                     reject({
                         statusCode: response.statusCode,
                         headers: response.headers,
