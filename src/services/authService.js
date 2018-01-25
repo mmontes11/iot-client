@@ -13,7 +13,7 @@ export class AuthService {
         const tokenFromStorage = AuthService.getTokenFromStorage();
         if (_.isUndefined(tokenFromStorage)) {
             try {
-                const token = (await this.client.userService.logIn()).data.token;
+                const token = (await this.client.userService.logIn()).body.token;
                 AuthService.storeToken(token);
                 return token;
             } catch (err) {

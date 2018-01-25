@@ -39,31 +39,36 @@ export class HTTPRequest {
         return new Promise((resolve, reject) => {
             request
                 .on('success', (data, response) => {
-                    log.logResponse(response, data, requestId);
+                    log.logInfo(`Request ${requestId} succeeded`);
+                    log.logResponse(data, response, requestId);
                     resolve({
                         statusCode: response.statusCode,
                         headers: response.headers,
-                        data
+                        body: data
                     });
                 })
                 .on('fail', (data, response) => {
-                    log.logResponse(response, data, requestId);
+                    log.logInfo(`Request ${requestId} failed`);
+                    log.logResponse(data, response, requestId);
                     if (_.isEqual(response.statusCode, httpStatus.UNAUTHORIZED)) {
                         AuthService.invalidateToken();
                     }
                     reject({
                         statusCode: response.statusCode,
                         headers: response.headers,
-                        data
+                        body: data
                     });
                 })
                 .on('error', (err, res) => {
+                    log.logError(`Request ${requestId} errored`);
                     reject(err);
                 })
                 .on('abort', () => {
+                    log.logInfo(`Request ${requestId} aborted`);
                     reject();
                 })
                 .on('timeout', (ms) => {
+                    log.logError(`Request ${requestId} timeout`);
                     reject();
                 });
         });
