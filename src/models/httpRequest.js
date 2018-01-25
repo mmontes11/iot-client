@@ -22,14 +22,7 @@ export class HTTPRequest {
             case HTTPMethod.POST: {
                 return rest.postJson(this.url, this.data, this.options);
             }
-            case HTTPMethod.PUT: {
-                return rest.putJson(this.url, this.data, this.options);
-            }
-            case HTTPMethod.DELETE: {
-                return rest.delete(this.url, this.options);
-            }
         }
-        return undefined;
     }
     start() {
         const request = this._createRequest();
