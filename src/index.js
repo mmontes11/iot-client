@@ -1,7 +1,7 @@
 import { Credentials } from './models/credentials';
 import { AuthService } from './services/authService';
 import { UserService } from './services/userService';
-import { MeasurementService } from './services/measurementService';
+import { MeasurementService } from './services/observationService';
 import { ObservationsService } from './services/observationsService';
 import { Log } from './util/log';
 import defaultOptions from './config/defaultOptions'

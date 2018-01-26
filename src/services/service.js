@@ -22,13 +22,13 @@ export class Service {
         const httpRequest = this._setupRequest(requestParams, token);
         return await httpRequest.start();
     }
-    async get(path, options) {
+    async get(path, options, includeToken = true) {
         const requestParams = new HTTPRequestParams(HTTPMethod.GET, path, options);
-        return this.request(requestParams, true);
+        return this.request(requestParams, includeToken);
     }
-    async create(data) {
-        const requestParams = new HTTPRequestParams(HTTPMethod.POST, undefined, undefined, data);
-        return this.request(requestParams, true);
+    async post(path, options, data, includeToken = true) {
+        const requestParams = new HTTPRequestParams(HTTPMethod.POST, path, options, data);
+        return this.request(requestParams, includeToken);
     }
     _setupRequest(requestParams, token) {
         let url;
