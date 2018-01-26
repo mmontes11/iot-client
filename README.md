@@ -14,6 +14,8 @@ $ npm install @mmontes11/iot-client
 ### Usage example
 
 ``` javascript
+import IoTClient from "@mmontes11/iot-client";
+
 const iotClient = new IoTClient({
   host: 'http://localhost:800',
   username: 'foo',
