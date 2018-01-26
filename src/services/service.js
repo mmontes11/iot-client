@@ -22,6 +22,10 @@ export class Service {
         const httpRequest = this._setupRequest(requestParams, token);
         return await httpRequest.start();
     }
+    async get(path, options) {
+        const requestParams = new HTTPRequestParams(HTTPMethod.GET, path, options);
+        return this.request(requestParams, true);
+    }
     async create(data) {
         const requestParams = new HTTPRequestParams(HTTPMethod.POST, undefined, undefined, data);
         return this.request(requestParams, true);
