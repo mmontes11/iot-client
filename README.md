@@ -8,7 +8,7 @@ ES6 client library for consuming [IoT backend](https://github.com/mmontes11/iot-
 ### Installing
 
 ```bash
-$ npm install @mmontes11/iot-client --save
+$ npm i @mmontes11/iot-client --save
 ```
 
 ### Usage example
