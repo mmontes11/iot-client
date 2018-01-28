@@ -1,6 +1,6 @@
 {
   "name": "@mmontes11/iot-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "ES6 client library for consuming IoT backend REST API",
   "license": "MIT",
   "private": false,
