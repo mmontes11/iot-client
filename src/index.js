@@ -3,6 +3,7 @@ import { AuthService } from './services/authService';
 import { UserService } from './services/userService';
 import { MeasurementService } from './services/observationService';
 import { ObservationsService } from './services/observationsService';
+import { TimePeriodsService } from './services/timePeriodsService';
 import { Log } from './util/log';
 import defaultOptions from './config/defaultOptions'
 
@@ -18,5 +19,6 @@ export default class IotClient {
         this.userService = new UserService(this);
         this.measurementService = new MeasurementService(this);
         this.observationsService = new ObservationsService(this);
+        this.timePeriodsService = new TimePeriodsService(this);
     }
 }

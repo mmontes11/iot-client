@@ -1,16 +1,15 @@
 import chai from './lib/chai';
 import server from './lib/iot-backend/src/index';
+import httpStatus from 'http-status';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
 import { MeasurementModel } from './lib/iot-backend/src/models/measurement';
-import redisClient from './lib/iot-backend/src/lib/redis';
-
 import { AuthService } from "../src/services/authService";
+import redisClient from './lib/iot-backend/src/lib/redis';
 import IotClient from '../src/index';
 import serverConstants from './lib/iot-backend/test/constants/measurement';
 import clientConstants from './constants/measurement';
 import userConstants from './lib/iot-backend/test/constants/user';
-import httpStatus from 'http-status';
 
 const assert = chai.assert;
 const should = chai.should();
