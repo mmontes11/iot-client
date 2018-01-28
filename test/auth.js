@@ -3,7 +3,7 @@ import server from './lib/iot-backend/src/index';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
 import { AuthService } from "../src/services/authService";
-import IotClient from '../src/index';
+import IoTClient from '../src/index';
 import serverConstants from './lib/iot-backend/test/constants/user';
 import clientConstants from './constants/auth';
 import measurementConstants from './lib/iot-backend/test/constants/measurement';
@@ -15,14 +15,14 @@ const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
 const username = serverConstants.validUser.username;
 const password = serverConstants.validUser.password;
-const client = new IotClient({
+const client = new IoTClient({
     host,
     basicAuthUsername,
     basicAuthPassword,
     username,
     password
 });
-const clientWithInvalidCredentials = new IotClient({
+const clientWithInvalidCredentials = new IoTClient({
     host,
     basicAuthUsername: 'foo',
     basicAuthPassword: 'bar',

@@ -3,9 +3,11 @@ import server from './lib/iot-backend/src/index';
 import httpStatus from 'http-status';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
+import { ThingModel } from './lib/iot-backend/src/models/thing';
 import { AuthService } from "../src/services/authService";
 import IoTClient from '../src/index';
 import userConstants from './lib/iot-backend/test/constants/user';
+import measurementConstants from './lib/iot-backend/test/constants/measurement';
 
 const assert = chai.assert;
 const should = chai.should();
@@ -29,7 +31,7 @@ const clientWithInvalidCredentials = new IoTClient({
     password: 'bar'
 });
 
-describe('TimePeriod', () => {
+describe('Things', () => {
 
     before((done) => {
         AuthService.invalidateToken();
@@ -46,9 +48,19 @@ describe('TimePeriod', () => {
         });
     });
 
-    describe('POST /timePeriods 401', () => {
-        it('tries to get supported time periods with invalid credentials', (done) => {
-            const promise = clientWithInvalidCredentials.timePeriodsService.getSupportedTimePeriods();
+    before((done) => {
+        const promises = [ThingModel.remove({})];
+        Promise.all(promises)
+            .then(() => {
+                done();
+            }).catch((err) => {
+                done(err);
+            });
+    });
+
+    describe('POST /things 401', () => {
+        it('tries to get available things with invalid credentials', (done) => {
+            const promise = clientWithInvalidCredentials.thingsService.getThings();
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
@@ -56,9 +68,20 @@ describe('TimePeriod', () => {
         })
     });
 
-    describe('POST /timePeriods 200', () => {
-        it('gets supported time periods', (done) => {
-            const promise = client.timePeriodsService.getSupportedTimePeriods();
+    describe('POST /things 200', () => {
+        beforeEach((done) => {
+            const promises = [client.measurementService.create(measurementConstants.validMeasurementRequestWithThingInNYC),
+                client.measurementService.create(measurementConstants.validMeasurementRequestWithThingInCoruna)];
+            Promise.all(promises)
+                .then(() => {
+                    done();
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
+        it('gets available things', (done) => {
+            const promise = client.thingsService.getThings();
             promise
                 .then((result) => {
                     result.statusCode.should.be.equal(httpStatus.OK);

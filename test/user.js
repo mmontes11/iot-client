@@ -2,7 +2,7 @@ import chai from './lib/chai';
 import server from './lib/iot-backend/src/index';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
-import IotClient from '../src/index';
+import IoTClient from '../src/index';
 import constants from './lib/iot-backend/test/constants/user';
 import httpStatus from 'http-status';
 
@@ -13,14 +13,14 @@ const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
 const username = constants.validUser.username;
 const password = constants.validUser.password;
-const client = new IotClient({
+const client = new IoTClient({
     host,
     basicAuthUsername,
     basicAuthPassword,
     username,
     password
 });
-const clientWithInvalidCredentials = new IotClient({
+const clientWithInvalidCredentials = new IoTClient({
     host,
     basicAuthUsername: 'foo',
     basicAuthPassword: 'bar',

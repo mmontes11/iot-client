@@ -4,10 +4,11 @@ import { UserService } from './services/userService';
 import { MeasurementService } from './services/observationService';
 import { ObservationsService } from './services/observationsService';
 import { TimePeriodsService } from './services/timePeriodsService';
+import { ThingsService } from './services/thingsService';
 import { Log } from './util/log';
 import defaultOptions from './config/defaultOptions'
 
-export default class IotClient {
+export default class IoTClient {
     constructor(optionsByParam) {
         const options = Object.assign({}, defaultOptions, optionsByParam);
         const basicAuthCredentials = new Credentials(options.basicAuthUsername, options.basicAuthPassword);
@@ -20,5 +21,6 @@ export default class IotClient {
         this.measurementService = new MeasurementService(this);
         this.observationsService = new ObservationsService(this);
         this.timePeriodsService = new TimePeriodsService(this);
+        this.thingsService = new ThingsService(this);
     }
 }

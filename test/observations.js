@@ -3,7 +3,7 @@ import server from './lib/iot-backend/src/index';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
 import { AuthService } from "../src/services/authService";
-import IotClient from '../src/index';
+import IoTClient from '../src/index';
 import observationConstants from './lib/iot-backend/test/constants/observations';
 import userConstants from './lib/iot-backend/test/constants/user';
 import thingConstants from './lib/iot-backend/test/constants/thing';
@@ -16,14 +16,14 @@ const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
 const username = userConstants.validUser.username;
 const password = userConstants.validUser.password;
-const client = new IotClient({
+const client = new IoTClient({
     host,
     basicAuthUsername,
     basicAuthPassword,
     username,
     password
 });
-const clientWithInvalidCredentials = new IotClient({
+const clientWithInvalidCredentials = new IoTClient({
     host,
     basicAuthUsername: 'foo',
     basicAuthPassword: 'bar',
@@ -32,7 +32,7 @@ const clientWithInvalidCredentials = new IotClient({
 });
 
 
-describe('Measurement', () => {
+describe('Observations', () => {
 
     before((done) => {
         AuthService.invalidateToken();

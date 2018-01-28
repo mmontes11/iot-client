@@ -6,7 +6,7 @@ import { UserModel } from './lib/iot-backend/src/models/user';
 import { MeasurementModel } from './lib/iot-backend/src/models/measurement';
 import { AuthService } from "../src/services/authService";
 import redisClient from './lib/iot-backend/src/lib/redis';
-import IotClient from '../src/index';
+import IoTClient from '../src/index';
 import serverConstants from './lib/iot-backend/test/constants/measurement';
 import clientConstants from './constants/measurement';
 import userConstants from './lib/iot-backend/test/constants/user';
@@ -18,14 +18,14 @@ const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
 const username = userConstants.validUser.username;
 const password = userConstants.validUser.password;
-const client = new IotClient({
+const client = new IoTClient({
     host,
     basicAuthUsername,
     basicAuthPassword,
     username,
     password
 });
-const clientWithInvalidCredentials = new IotClient({
+const clientWithInvalidCredentials = new IoTClient({
     host,
     basicAuthUsername: 'foo',
     basicAuthPassword: 'bar',
