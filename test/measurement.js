@@ -1,8 +1,8 @@
 import chai from './lib/chai';
 import server from './lib/iot-backend/src/index';
 import serverConfig from './lib/iot-backend/src/config/index';
-import { UserModel } from './lib/iot-backend/src/models/db/user';
-import { MeasurementModel } from './lib/iot-backend/src/models/db/measurement';
+import { UserModel } from './lib/iot-backend/src/models/user';
+import { MeasurementModel } from './lib/iot-backend/src/models/measurement';
 import redisClient from './lib/iot-backend/src/lib/redis';
 
 import { AuthService } from "../src/services/authService";

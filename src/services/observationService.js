@@ -30,8 +30,8 @@ class MeasurementService extends ObservationService {
     async getStatsByDateRange(startDate, endDate) {
         return this.getStats({ startDate, endDate });
     }
-    async getStatsByLastTimePeriod(lastTimePeriod) {
-        return this.getStats({ lastTimePeriod });
+    async getStatsByTimePeriod(timePeriod) {
+        return this.getStats({ timePeriod });
     }
     async getStatsByCoordinates(longitude, latitude, maxDistance) {
         return this.getStats({ longitude, latitude, maxDistance });

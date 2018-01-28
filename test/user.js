@@ -1,7 +1,7 @@
 import chai from './lib/chai';
 import server from './lib/iot-backend/src/index';
 import serverConfig from './lib/iot-backend/src/config/index';
-import { UserModel } from './lib/iot-backend/src/models/db/user';
+import { UserModel } from './lib/iot-backend/src/models/user';
 import IotClient from '../src/index';
 import constants from './lib/iot-backend/test/constants/user';
 import httpStatus from 'http-status';

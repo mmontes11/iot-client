@@ -8,7 +8,7 @@ export default {
     notAvailableAddress: "Maya Bay, Thailand",
     availableType: "temperature",
     availableThing: "raspi-nyc",
-    availableLastTimePeriod: "day",
+    availableTimePeriod: "day",
     availableCoordinates: {
         longitude: -8.4065665,
         latitude: 43.3682188
