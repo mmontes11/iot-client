@@ -1,7 +1,7 @@
 import rest from 'restler';
 import { HTTPMethod } from './httpMethod';
 import { Log } from '../util/log';
-import { AuthService} from "../services/authService"
+import { TokenHandler} from "../helpers/tokenHandler"
 import httpStatus from 'http-status';
 import _ from 'underscore';
 
@@ -44,7 +44,7 @@ export class HTTPRequest {
                     log.logInfo(`Request ${requestId} failed`);
                     log.logResponse(data, response, requestId);
                     if (_.isEqual(response.statusCode, httpStatus.UNAUTHORIZED)) {
-                        AuthService.invalidateToken();
+                        TokenHandler.invalidateToken();
                     }
                     reject({
                         statusCode: response.statusCode,

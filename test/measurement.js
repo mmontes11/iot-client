@@ -4,20 +4,20 @@ import httpStatus from 'http-status';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
 import { MeasurementModel } from './lib/iot-backend/src/models/measurement';
-import { AuthService } from "../src/services/authService";
+import { TokenHandler } from "../src/helpers/tokenHandler";
 import redisClient from './lib/iot-backend/src/lib/redis';
 import IoTClient from '../src/index';
 import serverConstants from './lib/iot-backend/test/constants/measurement';
 import clientConstants from './constants/measurement';
-import userConstants from './lib/iot-backend/test/constants/user';
+import authConstants from './lib/iot-backend/test/constants/auth';
 
 const assert = chai.assert;
 const should = chai.should();
 const host = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
-const username = userConstants.validUser.username;
-const password = userConstants.validUser.password;
+const username = authConstants.validUser.username;
+const password = authConstants.validUser.password;
 const client = new IoTClient({
     host,
     basicAuthUsername,
@@ -37,11 +37,11 @@ const clientWithInvalidCredentials = new IoTClient({
 describe('Measurement', () => {
 
     before((done) => {
-        AuthService.invalidateToken();
-        assert(AuthService.getTokenFromStorage() === undefined, 'Token should be undefined');
+        TokenHandler.invalidateToken();
+        assert(TokenHandler.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
-            client.userService.create(userConstants.validUser)
+            client.authService.createUser(authConstants.validUser)
                 .then(() => {
                     done();
                 })
@@ -62,7 +62,7 @@ describe('Measurement', () => {
     });
 
     describe('POST /measurement 401', () => {
-        it('tries to create a measurement with invalid credentials', (done) => {
+        it('tries to createUser a measurement with invalid credentials', (done) => {
             const promise = clientWithInvalidCredentials.measurementService.create(serverConstants.temperatureMeasurement);
             promise
                 .should.eventually.be.rejected
@@ -82,7 +82,7 @@ describe('Measurement', () => {
     });
 
     describe('POST /measurement 400', () => {
-        it('tries to create a an invalid measurement', (done) => {
+        it('tries to createUser a an invalid measurement', (done) => {
             const promise = client.measurementService.create(serverConstants.invalidMeasurementRequest);
             promise
                 .should.eventually.be.rejected

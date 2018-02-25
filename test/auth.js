@@ -1,10 +1,11 @@
 import chai from './lib/chai';
+import httpStatus from 'http-status'
 import server from './lib/iot-backend/src/index';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
-import { AuthService } from "../src/services/authService";
+import { TokenHandler } from "../src/helpers/tokenHandler";
 import IoTClient from '../src/index';
-import serverConstants from './lib/iot-backend/test/constants/user';
+import serverConstants from './lib/iot-backend/test/constants/auth';
 import clientConstants from './constants/auth';
 import measurementConstants from './lib/iot-backend/test/constants/measurement';
 
@@ -33,11 +34,11 @@ const clientWithInvalidCredentials = new IoTClient({
 describe('Auth', () => {
 
     beforeEach((done) => {
-        AuthService.invalidateToken();
-        assert(AuthService.getTokenFromStorage() === undefined, 'Token should be undefined');
+        TokenHandler.invalidateToken();
+        assert(TokenHandler.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
-            client.userService.create(serverConstants.validUser)
+            client.authService.createUser(serverConstants.validUser)
                 .then(() => {
                     done();
                 })
@@ -47,58 +48,158 @@ describe('Auth', () => {
         });
     });
 
-    it('gets a token for an user with invalid credentials', (done) => {
-        clientWithInvalidCredentials.authService.getToken()
-            .then((token) => {
-                done(new Error('Promise should be rejected'));
-            })
-            .catch((err) => {
-                should.exist(err);
-                should.not.exist(AuthService.getTokenFromStorage());
-                done();
-            });
+    describe('POST /auth 401', () => {
+        it('tries to check auth with invalid credentials', (done) => {
+            const promise = clientWithInvalidCredentials.authService.checkAuth(serverConstants.validUser);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
+                .and.notify(done);
+        })
     });
 
-    it('gets a token for a valid user', (done) => {
-        client.authService.getToken()
-            .then((token) => {
-                token.should.be.equal(AuthService.getTokenFromStorage());
-                client.authService.getToken()
-                    .then((token) => {
-                        token.should.be.equal(AuthService.getTokenFromStorage());
-                        done();
+    describe('POST /auth 401', () => {
+        it('checks auth of an user with invalid credentials', (done) => {
+            const promise = client.authService.checkAuth(serverConstants.invalidUser);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
+                .and.notify(done);
+        })
+    });
+
+    describe('POST /auth 200', () => {
+        it('checks auth of an user with valid credentials', (done) => {
+            const promise = client.authService.checkAuth(serverConstants.validUser);
+            promise
+                .should.eventually.be.fulfilled
+                .and.have.property('statusCode', httpStatus.OK)
+                .and.notify(done);
+        })
+    });
+
+    describe('POST /auth/user 401', () => {
+        it('tries to create user a user with invalid credentials', (done) => {
+            const promise = clientWithInvalidCredentials.authService.createUser(serverConstants.validUser);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
+                .and.notify(done);
+        })
+    });
+
+    describe('POST /auth/user 400', () => {
+        it('tries to createUser an invalid user', (done) => {
+            const promise = client.authService.createUser(serverConstants.invalidUser);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.BAD_REQUEST)
+                .and.notify(done);
+        });
+        it('tries to createUser a user with weak password', (done) => {
+            const promise = client.authService.createUser(serverConstants.userWithWeakPassword);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.BAD_REQUEST)
+                .and.notify(done);
+        });
+    });
+
+    describe('POST /auth/user 409', () => {
+        it('creates the same user twice', (done) => {
+            UserModel.remove({}, (err) => {
+                assert(err !== undefined, 'Error cleaning MongoDB for tests');
+                client.authService.createUser(serverConstants.validUser)
+                    .then(() => {
+                        const promise = client.authService.createUser(serverConstants.validUser);
+                        promise
+                            .should.eventually.be.rejected
+                            .and.have.property('statusCode', httpStatus.CONFLICT)
+                            .and.notify(done);
                     })
                     .catch((err) => {
                         done(err);
                     });
-            })
-            .catch((err) => {
-                done(err);
             });
+
+        });
     });
 
-    it('gets a token for a valid user and deletes it', (done) => {
-        client.authService.getToken()
-            .then((token) => {
-                token.should.be.equal(AuthService.getTokenFromStorage());
-                AuthService.invalidateToken();
-                should.not.exist(AuthService.getTokenFromStorage());
-                done();
-            })
-            .catch((err) => {
-                done(err);
+    describe('POST /auth/user 200', () => {
+        it('creates a user', (done) => {
+            UserModel.remove({}, (err) => {
+                assert(err !== undefined, 'Error cleaning MongoDB for tests');
+                const promise = client.authService.createUser(serverConstants.validUser);
+                promise
+                    .should.eventually.be.fulfilled
+                    .and.have.property('statusCode', httpStatus.CREATED)
+                    .and.notify(done);
             });
+
+        });
     });
 
-    it('tries to use an invalid token in a request that requires auth and then deletes it', (done) => {
-        AuthService.storeToken(clientConstants.invalidToken);
-        client.measurementService.create(measurementConstants.validMeasurementRequestWithThingInNYC)
-            .then(() => {
-                done(new Error("Request should fail and return a 401 Unauthorized"));
-            })
-            .catch((err) => {
-                should.not.exist(AuthService.getTokenFromStorage());
-                done();
-            });
+    describe('POST /auth/token 401', () => {
+        it('tries to get a token with a non existing user', (done) => {
+            const promise = clientWithInvalidCredentials.authService.getToken();
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
+                .and.notify(done);
+        });
+        it('tries to get a token with an user with invalid credentials', (done) => {
+            clientWithInvalidCredentials.authService.getToken()
+                .then((token) => {
+                    done(new Error('Promise should be rejected'));
+                })
+                .catch((err) => {
+                    should.exist(err);
+                    should.not.exist(TokenHandler.getTokenFromStorage());
+                    done();
+                });
+        });
+        it('tries to use an invalid token in a request that requires auth and then deletes it', (done) => {
+            TokenHandler.storeToken(clientConstants.invalidToken);
+            client.measurementService.create(measurementConstants.validMeasurementRequestWithThingInNYC)
+                .then(() => {
+                    done(new Error("Request should fail and return a 401 Unauthorized"));
+                })
+                .catch((err) => {
+                    should.not.exist(TokenHandler.getTokenFromStorage());
+                    done();
+                });
+        });
+    });
+
+    describe('POST /auth/token 200', () => {
+        it('gets a token for a valid user', (done) => {
+            client.authService.getToken()
+                .then((token) => {
+                    token.should.be.equal(TokenHandler.getTokenFromStorage());
+                    client.authService.getToken()
+                        .then((token) => {
+                            token.should.be.equal(TokenHandler.getTokenFromStorage());
+                            done();
+                        })
+                        .catch((err) => {
+                            done(err);
+                        });
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
+        it('gets a token for a valid user and then deletes it', (done) => {
+            client.authService.getToken()
+                .then((token) => {
+                    token.should.be.equal(TokenHandler.getTokenFromStorage());
+                    TokenHandler.invalidateToken();
+                    should.not.exist(TokenHandler.getTokenFromStorage());
+                    done();
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
     });
 });
