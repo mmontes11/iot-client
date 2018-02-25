@@ -41,7 +41,7 @@ describe('Measurement', () => {
         assert(TokenHandler.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
-            client.userService.create(userConstants.validUser)
+            client.authService.createUser(userConstants.validUser)
                 .then(() => {
                     done();
                 })
@@ -62,7 +62,7 @@ describe('Measurement', () => {
     });
 
     describe('POST /measurement 401', () => {
-        it('tries to create a measurement with invalid credentials', (done) => {
+        it('tries to createUser a measurement with invalid credentials', (done) => {
             const promise = clientWithInvalidCredentials.measurementService.create(serverConstants.temperatureMeasurement);
             promise
                 .should.eventually.be.rejected
@@ -82,7 +82,7 @@ describe('Measurement', () => {
     });
 
     describe('POST /measurement 400', () => {
-        it('tries to create a an invalid measurement', (done) => {
+        it('tries to createUser a an invalid measurement', (done) => {
             const promise = client.measurementService.create(serverConstants.invalidMeasurementRequest);
             promise
                 .should.eventually.be.rejected

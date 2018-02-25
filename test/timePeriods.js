@@ -36,7 +36,7 @@ describe('TimePeriod', () => {
         assert(TokenHandler.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
-            client.userService.create(userConstants.validUser)
+            client.authService.createUser(userConstants.validUser)
                 .then(() => {
                     done();
                 })

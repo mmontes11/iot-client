@@ -3,19 +3,19 @@ import { HTTPMethod } from '../models/httpMethod';
 import { HTTPRequestParams } from '../models/httpRequestParams';
 import _ from 'underscore';
 
-export class UserService extends Service {
+export class AuthService extends Service {
     constructor(client) {
         super(client, 'user');
         this.client = client;
     }
-    async create(user) {
+    async createUser(user) {
         const options = {
             username: this.client.tokenHandler.basicAuthCredentials.username,
             password: this.client.tokenHandler.basicAuthCredentials.password,
         };
         return this.post(undefined, options, user, false);
     }
-    async logIn() {
+    async getToken() {
         const user = {
             username: this.client.tokenHandler.userCredentials.username,
             password: this.client.tokenHandler.userCredentials.password

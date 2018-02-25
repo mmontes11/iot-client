@@ -39,7 +39,7 @@ describe('Observations', () => {
         assert(TokenHandler.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
-            client.userService.create(userConstants.validUser)
+            client.authService.createUser(userConstants.validUser)
                 .then(() => {
                     done();
                 })
@@ -50,7 +50,7 @@ describe('Observations', () => {
     });
 
     describe('POST /observations 401', () => {
-        it('tries to create observations with invalid credentials', (done) => {
+        it('tries to createUser observations with invalid credentials', (done) => {
             const promise = clientWithInvalidCredentials.observationsService.create(observationConstants.temperatureMeasurement);
             promise
                 .should.eventually.be.rejected
@@ -60,7 +60,7 @@ describe('Observations', () => {
     });
 
     describe('POST /observations 304', () => {
-        it('tries to create observations using an empty array', (done) => {
+        it('tries to createUser observations using an empty array', (done) => {
             const emptyObservations = {
                 observations: []
             };
@@ -73,7 +73,7 @@ describe('Observations', () => {
     });
 
     describe('POST /observations 400', () => {
-        it('tries to create observations using an invalid payload', (done) => {
+        it('tries to createUser observations using an invalid payload', (done) => {
             const invalidPayload = {
                 foo: []
             };
@@ -83,7 +83,7 @@ describe('Observations', () => {
                 .and.have.property('statusCode', httpStatus.BAD_REQUEST)
                 .and.notify(done);
         });
-        it('tries to create invalid observations', (done) => {
+        it('tries to createUser invalid observations', (done) => {
             const invalidObservations = {
                 observations: [
                     observationConstants.invalidMeasurementWithKind,
@@ -118,7 +118,7 @@ describe('Observations', () => {
     });
 
     describe('POST /observations 207', () => {
-        it('creates observations and also tries to create invalid ones', (done) => {
+        it('creates observations and also tries to createUser invalid ones', (done) => {
             const measurements = [
                 observationConstants.validMeasurementWithKind,
                 observationConstants.validMeasurementWithInvalidKind,

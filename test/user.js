@@ -39,8 +39,8 @@ describe('User', () => {
     });
 
     describe('POST /user 401', () => {
-        it('tries to create a user with invalid credentials', (done) => {
-            const promise = clientWithInvalidCredentials.userService.create(constants.validUser);
+        it('tries to createUser a user with invalid credentials', (done) => {
+            const promise = clientWithInvalidCredentials.authService.createUser(constants.validUser);
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
@@ -49,8 +49,8 @@ describe('User', () => {
     });
 
     describe('POST /user 400', () => {
-        it('tries to create an invalid user', (done) => {
-            const promise = client.userService.create(constants.invalidUser);
+        it('tries to createUser an invalid user', (done) => {
+            const promise = client.authService.createUser(constants.invalidUser);
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.BAD_REQUEST)
@@ -59,8 +59,8 @@ describe('User', () => {
     });
 
     describe('POST /user 400', () => {
-        it('tries to create a user with weak password', (done) => {
-            const promise = client.userService.create(constants.userWithWeakPassword);
+        it('tries to createUser a user with weak password', (done) => {
+            const promise = client.authService.createUser(constants.userWithWeakPassword);
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.BAD_REQUEST)
@@ -70,9 +70,9 @@ describe('User', () => {
 
     describe('POST /user && POST /user', () => {
         it('creates the same user twice', (done) => {
-            client.userService.create(constants.validUser)
+            client.authService.createUser(constants.validUser)
                 .then(() => {
-                    const promise = client.userService.create(constants.validUser);
+                    const promise = client.authService.createUser(constants.validUser);
                     promise
                         .should.eventually.be.rejected
                         .and.have.property('statusCode', httpStatus.CONFLICT)
@@ -84,11 +84,11 @@ describe('User', () => {
         });
     });
 
-    describe('POST /user && POST /user/logIn', () => {
+    describe('POST /user && POST /user/getToken', () => {
         it('creates a user and logs in', (done) => {
-            client.userService.create(constants.validUser)
+            client.authService.createUser(constants.validUser)
                 .then(() => {
-                    const promise = client.userService.logIn();
+                    const promise = client.authService.getToken();
                     promise
                         .should.eventually.be.fulfilled
                         .and.have.property('statusCode', httpStatus.OK)
@@ -100,9 +100,9 @@ describe('User', () => {
         });
     });
 
-    describe('POST /user/logIn', () => {
+    describe('POST /user/getToken', () => {
         it('tries to log in with a non existing user', (done) => {
-            const promise = clientWithInvalidCredentials.userService.logIn();
+            const promise = clientWithInvalidCredentials.authService.getToken();
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
