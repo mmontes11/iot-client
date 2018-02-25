@@ -5,7 +5,7 @@ import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
 import { TokenHandler } from "../src/helpers/tokenHandler";
 import IoTClient from '../src/index';
-import serverConstants from './lib/iot-backend/test/constants/user';
+import serverConstants from './lib/iot-backend/test/constants/auth';
 import clientConstants from './constants/auth';
 import measurementConstants from './lib/iot-backend/test/constants/measurement';
 
@@ -48,7 +48,7 @@ describe('Auth', () => {
         });
     });
 
-    describe('POST /user 401', () => {
+    describe('POST /auth/user 401', () => {
         it('tries to createUser a user with invalid credentials', (done) => {
             const promise = clientWithInvalidCredentials.authService.createUser(serverConstants.validUser);
             promise
@@ -58,7 +58,7 @@ describe('Auth', () => {
         })
     });
 
-    describe('POST /user 400', () => {
+    describe('POST /auth/user 400', () => {
         it('tries to createUser an invalid user', (done) => {
             const promise = client.authService.createUser(serverConstants.invalidUser);
             promise
@@ -75,17 +75,41 @@ describe('Auth', () => {
         });
     });
 
-    describe('POST /user 409', () => {
+    describe('POST /auth/user 409', () => {
         it('creates the same user twice', (done) => {
-            const promise = client.authService.createUser(serverConstants.validUser);
-            promise
-                .should.eventually.be.rejected
-                .and.have.property('statusCode', httpStatus.CONFLICT)
-                .and.notify(done);
+            UserModel.remove({}, (err) => {
+                assert(err !== undefined, 'Error cleaning MongoDB for tests');
+                client.authService.createUser(serverConstants.validUser)
+                    .then(() => {
+                        const promise = client.authService.createUser(serverConstants.validUser);
+                        promise
+                            .should.eventually.be.rejected
+                            .and.have.property('statusCode', httpStatus.CONFLICT)
+                            .and.notify(done);
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
         });
     });
 
-    describe('POST /user/logIn 401', () => {
+    describe('POST /auth/user 200', () => {
+        it('creates a user', (done) => {
+            UserModel.remove({}, (err) => {
+                assert(err !== undefined, 'Error cleaning MongoDB for tests');
+                const promise = client.authService.createUser(serverConstants.validUser);
+                promise
+                    .should.eventually.be.fulfilled
+                    .and.have.property('statusCode', httpStatus.CREATED)
+                    .and.notify(done);
+            });
+
+        });
+    });
+
+    describe('POST /auth/token 401', () => {
         it('tries to get a token with a non existing user', (done) => {
             const promise = clientWithInvalidCredentials.authService.getToken();
             promise
@@ -117,7 +141,7 @@ describe('Auth', () => {
         });
     });
 
-    describe('POST /user/logIn 200', () => {
+    describe('POST /auth/token 200', () => {
         it('gets a token for a valid user', (done) => {
             client.authService.getToken()
                 .then((token) => {

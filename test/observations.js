@@ -5,7 +5,7 @@ import { UserModel } from './lib/iot-backend/src/models/user';
 import { TokenHandler } from "../src/helpers/tokenHandler";
 import IoTClient from '../src/index';
 import observationConstants from './lib/iot-backend/test/constants/observations';
-import userConstants from './lib/iot-backend/test/constants/user';
+import authConstants from './lib/iot-backend/test/constants/auth';
 import thingConstants from './lib/iot-backend/test/constants/thing';
 import httpStatus from 'http-status';
 
@@ -14,8 +14,8 @@ const should = chai.should();
 const host = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
-const username = userConstants.validUser.username;
-const password = userConstants.validUser.password;
+const username = authConstants.validUser.username;
+const password = authConstants.validUser.password;
 const client = new IoTClient({
     host,
     basicAuthUsername,
@@ -39,7 +39,7 @@ describe('Observations', () => {
         assert(TokenHandler.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
-            client.authService.createUser(userConstants.validUser)
+            client.authService.createUser(authConstants.validUser)
                 .then(() => {
                     done();
                 })

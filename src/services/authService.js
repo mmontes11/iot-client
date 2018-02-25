@@ -6,16 +6,12 @@ import _ from 'underscore';
 
 export class AuthService extends Service {
     constructor(client, basicAuthCredentials, userCredentials) {
-        super(client, 'user');
+        super(client, 'auth');
         this.basicAuthCredentials = basicAuthCredentials;
         this.userCredentials = userCredentials;
     }
     async createUser(user) {
-        const options = {
-            username: this.basicAuthCredentials.username,
-            password: this.basicAuthCredentials.password,
-        };
-        return this.post(undefined, options, user, false);
+        return this._postWithBasicAuthCredentials('user', user);
     }
     async getToken() {
         const tokenFromStorage = TokenHandler.getTokenFromStorage();
@@ -32,11 +28,18 @@ export class AuthService extends Service {
             return tokenFromStorage;
         }
     }
+    async _postWithBasicAuthCredentials(path, data) {
+        const basicAuthOptions = {
+            username: this.basicAuthCredentials.username,
+            password: this.basicAuthCredentials.password,
+        };
+        return this.post(path, basicAuthOptions, data, false);
+    }
     async _getToken() {
         const user = {
             username: this.userCredentials.username,
             password: this.userCredentials.password
         };
-        return this.post('logIn', undefined, user, false);
+        return this._postWithBasicAuthCredentials('token', user);
     }
 }
