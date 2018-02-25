@@ -10,15 +10,15 @@ export class UserService extends Service {
     }
     async create(user) {
         const options = {
-            username: this.client.authService.basicAuthCredentials.username,
-            password: this.client.authService.basicAuthCredentials.password,
+            username: this.client.tokenHandler.basicAuthCredentials.username,
+            password: this.client.tokenHandler.basicAuthCredentials.password,
         };
         return this.post(undefined, options, user, false);
     }
     async logIn() {
         const user = {
-            username: this.client.authService.userCredentials.username,
-            password: this.client.authService.userCredentials.password
+            username: this.client.tokenHandler.userCredentials.username,
+            password: this.client.tokenHandler.userCredentials.password
         };
         return this.post('logIn', undefined, user, false);
     }

@@ -14,7 +14,7 @@ export class Service {
         let token = undefined;
         if (includeToken) {
             try {
-                token = await this.client.authService.getToken();
+                token = await this.client.tokenHandler.getToken();
             } catch (err) {
                 throw err;
             }

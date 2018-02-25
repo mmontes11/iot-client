@@ -2,7 +2,7 @@ import chai from './lib/chai';
 import server from './lib/iot-backend/src/index';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
-import { AuthService } from "../src/services/authService";
+import { TokenHandler } from "../src/helpers/tokenHandler";
 import IoTClient from '../src/index';
 import serverConstants from './lib/iot-backend/test/constants/user';
 import clientConstants from './constants/auth';
@@ -33,8 +33,8 @@ const clientWithInvalidCredentials = new IoTClient({
 describe('Auth', () => {
 
     beforeEach((done) => {
-        AuthService.invalidateToken();
-        assert(AuthService.getTokenFromStorage() === undefined, 'Token should be undefined');
+        TokenHandler.invalidateToken();
+        assert(TokenHandler.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
             client.userService.create(serverConstants.validUser)
@@ -48,24 +48,24 @@ describe('Auth', () => {
     });
 
     it('gets a token for an user with invalid credentials', (done) => {
-        clientWithInvalidCredentials.authService.getToken()
+        clientWithInvalidCredentials.tokenHandler.getToken()
             .then((token) => {
                 done(new Error('Promise should be rejected'));
             })
             .catch((err) => {
                 should.exist(err);
-                should.not.exist(AuthService.getTokenFromStorage());
+                should.not.exist(TokenHandler.getTokenFromStorage());
                 done();
             });
     });
 
     it('gets a token for a valid user', (done) => {
-        client.authService.getToken()
+        client.tokenHandler.getToken()
             .then((token) => {
-                token.should.be.equal(AuthService.getTokenFromStorage());
-                client.authService.getToken()
+                token.should.be.equal(TokenHandler.getTokenFromStorage());
+                client.tokenHandler.getToken()
                     .then((token) => {
-                        token.should.be.equal(AuthService.getTokenFromStorage());
+                        token.should.be.equal(TokenHandler.getTokenFromStorage());
                         done();
                     })
                     .catch((err) => {
@@ -78,11 +78,11 @@ describe('Auth', () => {
     });
 
     it('gets a token for a valid user and deletes it', (done) => {
-        client.authService.getToken()
+        client.tokenHandler.getToken()
             .then((token) => {
-                token.should.be.equal(AuthService.getTokenFromStorage());
-                AuthService.invalidateToken();
-                should.not.exist(AuthService.getTokenFromStorage());
+                token.should.be.equal(TokenHandler.getTokenFromStorage());
+                TokenHandler.invalidateToken();
+                should.not.exist(TokenHandler.getTokenFromStorage());
                 done();
             })
             .catch((err) => {
@@ -91,13 +91,13 @@ describe('Auth', () => {
     });
 
     it('tries to use an invalid token in a request that requires auth and then deletes it', (done) => {
-        AuthService.storeToken(clientConstants.invalidToken);
+        TokenHandler.storeToken(clientConstants.invalidToken);
         client.measurementService.create(measurementConstants.validMeasurementRequestWithThingInNYC)
             .then(() => {
                 done(new Error("Request should fail and return a 401 Unauthorized"));
             })
             .catch((err) => {
-                should.not.exist(AuthService.getTokenFromStorage());
+                should.not.exist(TokenHandler.getTokenFromStorage());
                 done();
             });
     });

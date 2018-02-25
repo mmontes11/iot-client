@@ -3,21 +3,21 @@ import _ from 'underscore';
 
 const tokenKey = 'token';
 
-export class AuthService {
+export class TokenHandler {
     constructor(client, basicAuthCredentials, userCredentials) {
         this.client = client;
         this.basicAuthCredentials = basicAuthCredentials;
         this.userCredentials = userCredentials;
     }
     async getToken() {
-        const tokenFromStorage = AuthService.getTokenFromStorage();
+        const tokenFromStorage = TokenHandler.getTokenFromStorage();
         if (_.isUndefined(tokenFromStorage)) {
             try {
                 const token = (await this.client.userService.logIn()).body.token;
-                AuthService.storeToken(token);
+                TokenHandler.storeToken(token);
                 return token;
             } catch (err) {
-                AuthService.invalidateToken();
+                TokenHandler.invalidateToken();
                 throw err;
             }
         } else {

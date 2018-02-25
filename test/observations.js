@@ -2,7 +2,7 @@ import chai from './lib/chai';
 import server from './lib/iot-backend/src/index';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
-import { AuthService } from "../src/services/authService";
+import { TokenHandler } from "../src/helpers/tokenHandler";
 import IoTClient from '../src/index';
 import observationConstants from './lib/iot-backend/test/constants/observations';
 import userConstants from './lib/iot-backend/test/constants/user';
@@ -35,8 +35,8 @@ const clientWithInvalidCredentials = new IoTClient({
 describe('Observations', () => {
 
     before((done) => {
-        AuthService.invalidateToken();
-        assert(AuthService.getTokenFromStorage() === undefined, 'Token should be undefined');
+        TokenHandler.invalidateToken();
+        assert(TokenHandler.getTokenFromStorage() === undefined, 'Token should be undefined');
         UserModel.remove({}, (err) => {
             assert(err !== undefined, 'Error cleaning MongoDB for tests');
             client.userService.create(userConstants.validUser)
