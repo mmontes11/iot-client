@@ -1,5 +1,4 @@
 import { Credentials } from './models/credentials';
-import { TokenHandler } from './helpers/tokenHandler';
 import { AuthService } from './services/authService';
 import { MeasurementService } from './services/observationService';
 import { ObservationsService } from './services/observationsService';
@@ -16,8 +15,7 @@ export default class IoTClient {
         this.host = options.host;
         this.headers = options.headers;
         this.log = new Log(options.debug);
-        this.tokenHandler = new TokenHandler(this, basicAuthCredentials, userCredentials);
-        this.authService = new AuthService(this);
+        this.authService = new AuthService(this, basicAuthCredentials, userCredentials);
         this.measurementService = new MeasurementService(this);
         this.observationsService = new ObservationsService(this);
         this.timePeriodsService = new TimePeriodsService(this);
