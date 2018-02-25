@@ -48,8 +48,38 @@ describe('Auth', () => {
         });
     });
 
+    describe('POST /auth 401', () => {
+        it('tries to check auth with invalid credentials', (done) => {
+            const promise = clientWithInvalidCredentials.authService.checkAuth(serverConstants.validUser);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
+                .and.notify(done);
+        })
+    });
+
+    describe('POST /auth 401', () => {
+        it('checks auth of an user with invalid credentials', (done) => {
+            const promise = client.authService.checkAuth(serverConstants.invalidUser);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
+                .and.notify(done);
+        })
+    });
+
+    describe('POST /auth 200', () => {
+        it('checks auth of an user with valid credentials', (done) => {
+            const promise = client.authService.checkAuth(serverConstants.validUser);
+            promise
+                .should.eventually.be.fulfilled
+                .and.have.property('statusCode', httpStatus.OK)
+                .and.notify(done);
+        })
+    });
+
     describe('POST /auth/user 401', () => {
-        it('tries to createUser a user with invalid credentials', (done) => {
+        it('tries to create user a user with invalid credentials', (done) => {
             const promise = clientWithInvalidCredentials.authService.createUser(serverConstants.validUser);
             promise
                 .should.eventually.be.rejected

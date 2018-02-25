@@ -10,6 +10,9 @@ export class AuthService extends Service {
         this.basicAuthCredentials = basicAuthCredentials;
         this.userCredentials = userCredentials;
     }
+    async checkAuth(user) {
+        return this._postWithBasicAuthCredentials(undefined, user);
+    }
     async createUser(user) {
         return this._postWithBasicAuthCredentials('user', user);
     }
