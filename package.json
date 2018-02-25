@@ -1,6 +1,6 @@
 {
   "name": "@mmontes11/iot-client",
-  "version": "0.0.7",
+  "version": "1.0.0",
   "description": "ES6 client library for consuming IoT backend REST API",
   "license": "MIT",
   "private": false,
@@ -27,7 +27,13 @@
     "es6",
     "babel",
     "nodejs",
-    "iot"
+    "mocha",
+    "chai",
+    "istanbul",
+    "winston",
+    "iot-client",
+    "iot",
+    "internet-of-things"
   ],
   "author": "Martín Montes <martin11lrx@gmail.com>",
   "bugs": {
