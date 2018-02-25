@@ -28,11 +28,11 @@ const iotClient = new IoTClient({
 });
 
 try {
-  const response = await iotClient.observationsService.create({
+  const res = await iotClient.observationsService.create({
       observations: observations,
       thing: thing
   });
-  console.log(response.createdObservations);
+  console.log(res);
 } catch (err) {
   console.log(err);
 }
