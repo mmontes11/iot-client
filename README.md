@@ -5,6 +5,9 @@
 
 ES6 client library for consuming [IoT backend](https://github.com/mmontes11/iot-backend) REST API
 
+### npm
+Available on [npm](https://www.npmjs.com/package/@mmontes11/iot-client)
+
 ### Installing
 
 ```bash
