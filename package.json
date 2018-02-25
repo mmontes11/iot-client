@@ -27,10 +27,10 @@
     "es6",
     "babel",
     "nodejs",
+    "npm",
     "mocha",
     "chai",
     "istanbul",
-    "winston",
     "iot-client",
     "iot",
     "internet-of-things"
