@@ -8,6 +8,6 @@ export class SubscriptionService extends Service {
         return this.post(undefined, undefined, subscription);
     }
     async unSubscribe(subscriptionId){
-        return this.del(subscriptionId, undefined);
+        return this.del(subscriptionId);
     }
 }

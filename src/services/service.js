@@ -26,13 +26,13 @@ export class Service {
         const requestParams = new HTTPRequestParams(HTTPMethod.GET, path, options);
         return this.request(requestParams, shouldSetAccessToken);
     }
-    async post(path, options, data, setAccessToken = true) {
+    async post(path, options, data, shouldSetAccessToken = true) {
         const requestParams = new HTTPRequestParams(HTTPMethod.POST, path, options, data);
-        return this.request(requestParams, setAccessToken);
+        return this.request(requestParams, shouldSetAccessToken);
     }
-    async del(path, options, data, setAccessToken = true) {
-        const requestParams = new HTTPRequestParams(HTTPMethod.DELETE, path, options, data);
-        return this.request(requestParams, setAccessToken);
+    async del(path, options, shouldSetAccessToken = true) {
+        const requestParams = new HTTPRequestParams(HTTPMethod.DELETE, path, options);
+        return this.request(requestParams, shouldSetAccessToken);
     }
     _setupRequest(requestParams, accessToken) {
         let url;
