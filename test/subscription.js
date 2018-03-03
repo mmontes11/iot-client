@@ -61,7 +61,7 @@ describe('Subscription', () => {
 
     describe('POST /subscription 401', () => {
         it('tries to create a subscription with invalid credentials', (done) => {
-            const promise = clientWithInvalidCredentials.subscriptionService.create(subscriptionConstants.validSubscription);
+            const promise = clientWithInvalidCredentials.subscriptionService.subscribe(subscriptionConstants.validSubscription);
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
@@ -71,7 +71,7 @@ describe('Subscription', () => {
 
     describe('POST /subscription 400', () => {
         it('tries to create an invalid subscription', (done) => {
-            const promise = client.subscriptionService.create(subscriptionConstants.invalidSubscription);
+            const promise = client.subscriptionService.subscribe(subscriptionConstants.invalidSubscription);
             promise
                 .should.eventually.be.rejected
                 .and.have.property('statusCode', httpStatus.BAD_REQUEST)
@@ -81,10 +81,10 @@ describe('Subscription', () => {
 
     describe('POST /subscription 304', () => {
         it('tries to recreate an already created subscription', (done) => {
-            const promise = client.subscriptionService.create(subscriptionConstants.validSubscription);
+            const promise = client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
             promise
                 .then(() => {
-                    const promise = client.subscriptionService.create(subscriptionConstants.validSubscription);
+                    const promise = client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
                     promise
                         .should.eventually.be.fulfilled
                         .and.have.property('statusCode', httpStatus.NOT_MODIFIED)
@@ -98,11 +98,48 @@ describe('Subscription', () => {
 
     describe('POST /subscription 201', () => {
         it('creates a subscription', (done) => {
-            const promise = client.subscriptionService.create(subscriptionConstants.validSubscription);
+            const promise = client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
             promise
                 .should.eventually.be.fulfilled
                 .and.have.property('statusCode', httpStatus.CREATED)
                 .and.notify(done);
+        });
+    });
+
+    describe('DELETE /subscription 400', () => {
+        it('tries to delete a subscription with an invalid subscription ID', (done) => {
+            const promise = client.subscriptionService.unSubscribe(subscriptionConstants.invalidSubscriptionId);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.BAD_REQUEST)
+                .and.notify(done);
+        });
+    });
+
+    describe('DELETE /subscription 404', () => {
+        it('tries to delete a subscription  with non existing with subscription ID', (done) => {
+            const promise = client.subscriptionService.unSubscribe(subscriptionConstants.nonExistingSubscriptionId);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.NOT_FOUND)
+                .and.notify(done);
+        });
+    });
+
+    describe('DELETE /subscription 201', () => {
+        it('deletes a subscription', (done) => {
+            client.subscriptionService.subscribe(subscriptionConstants.validSubscription)
+                .then((res) => {
+                    const subscriptionId = res.body._id;
+                    const promise = client.subscriptionService.unSubscribe(subscriptionId);
+                    promise
+                        .should.eventually.be.fulfilled
+                        .and.have.property('statusCode', httpStatus.OK)
+                        .and.notify(done);
+                })
+                .catch((err) => {
+                    done(err);
+                })
         });
     });
 });

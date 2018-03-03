@@ -30,6 +30,10 @@ export class Service {
         const requestParams = new HTTPRequestParams(HTTPMethod.POST, path, options, data);
         return this.request(requestParams, setAccessToken);
     }
+    async del(path, options, data, setAccessToken = true) {
+        const requestParams = new HTTPRequestParams(HTTPMethod.DELETE, path, options, data);
+        return this.request(requestParams, setAccessToken);
+    }
     _setupRequest(requestParams, accessToken) {
         let url;
         if (_.isUndefined(requestParams.path)) {

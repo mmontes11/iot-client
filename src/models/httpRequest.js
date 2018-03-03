@@ -22,6 +22,9 @@ export class HTTPRequest {
             case HTTPMethod.POST: {
                 return rest.postJson(this.url, this.data, this.options);
             }
+            case HTTPMethod.DELETE: {
+                return rest.del(this.url, this.options);
+            }
         }
     }
     start() {
