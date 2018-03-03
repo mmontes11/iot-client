@@ -21,7 +21,7 @@ $ npm i @mmontes11/iot-client --save
 import IoTClient from "@mmontes11/iot-client";
 
 const iotClient = new IoTClient({
-  host: 'http://localhost:800',
+  host: 'http://localhost:8000',
   username: 'foo',
   password: 'bar',
   basicAuthUsername: 'foo',
