@@ -1,4 +1,5 @@
 import chai from './lib/chai';
+import _ from 'underscore';
 import server from './lib/iot-backend/src/index';
 import serverConfig from './lib/iot-backend/src/config/index';
 import { UserModel } from './lib/iot-backend/src/models/user';
@@ -7,6 +8,7 @@ import { TokenHandler } from "../src/helpers/tokenHandler";
 import IoTClient from '../src/index';
 import authConstants from './lib/iot-backend/test/constants/auth';
 import subscriptionConstants from './lib/iot-backend/test/constants/subscription';
+import responseKeys from './lib/iot-backend/src/utils/responseKeys';
 import httpStatus from 'http-status';
 
 const assert = chai.assert;
@@ -141,5 +143,77 @@ describe('Subscription', () => {
                     done(err);
                 })
         });
+    });
+
+    describe('GET /subscriptions 400', () => {
+        it('tries to get subscriptions but no chatId query param is specified', (done) => {
+            const promise = client.subscriptionsService.getSubscriptionsByChat();
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.BAD_REQUEST)
+                .and.notify(done);
+        });
+        it('tries to get subscriptions with an invalid chatId query param', (done) => {
+            const promise = client.subscriptionsService.getSubscriptionsByChat(subscriptionConstants.invalidChatId);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.BAD_REQUEST)
+                .and.notify(done);
+        });
+    });
+
+    describe('GET /subscriptions 404', () => {
+        it('tries to get subscriptions but no one has been created yet', (done) => {
+            const promise = client.subscriptionsService.getSubscriptionsByChat(subscriptionConstants.validChatId);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.NOT_FOUND)
+                .and.notify(done);
+        });
+    });
+
+    describe('GET /subscriptions 200', () => {
+        it('gets subscriptions', (done) => {
+            const subscriptions = [
+                subscriptionConstants.validSubscription,
+                subscriptionConstants.validSubscription2,
+                subscriptionConstants.validSubscription3
+            ];
+            const promises = _.map(subscriptions, (subscription) => {
+                const newSubscription = new SubscriptionModel(subscription);
+                return newSubscription.save();
+            });
+            Promise.all(promises)
+                .then(() => {
+                    client.subscriptionsService.getSubscriptionsByChat(subscriptionConstants.validChatId2)
+                        .then((res) => {
+                            res.should.have.property('statusCode', httpStatus.OK);
+                            res.body[responseKeys.subscriptionsArrayKey].length.should.be.eql(2);
+                            const subscriptionId = _.first(res.body[responseKeys.subscriptionsArrayKey])._id;
+
+                            client.subscriptionService.unSubscribe(subscriptionId)
+                                .then(() => {
+                                    client.subscriptionsService.getSubscriptionsByChat(subscriptionConstants.validChatId)
+                                        .then((res) => {
+                                            res.should.have.property('statusCode', httpStatus.OK);
+                                            res.body[responseKeys.subscriptionsArrayKey].length.should.be.eql(1);
+                                            done();
+                                        })
+                                        .catch((err) => {
+                                            done(err);
+                                        });
+                                })
+                                .catch((err) => {
+                                    done(err);
+                                });
+                        })
+                        .catch((err) => {
+                            done(err);
+                        });
+                })
+                .catch((err) => {
+                    done(err);
+                })
+        })
     });
 });
