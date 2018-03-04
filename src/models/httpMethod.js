@@ -1,4 +1,5 @@
 export const HTTPMethod = Object.freeze({
     GET: Symbol("GET"),
-    POST: Symbol("POST")
+    POST: Symbol("POST"),
+    DELETE: Symbol("DELETE")
 });
