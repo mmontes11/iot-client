@@ -7,6 +7,7 @@ import { UserModel } from './lib/iot-backend/src/models/user';
 import { ThingModel } from './lib/iot-backend/src/models/thing';
 import { TokenHandler } from "../src/helpers/tokenHandler";
 import IoTClient from '../src/index';
+import constants from './constants/thing';
 import authConstants from './lib/iot-backend/test/constants/auth';
 import thingConstants from './lib/iot-backend/test/constants/thing';
 
@@ -79,6 +80,16 @@ describe('Things', () => {
             })
     });
 
+    describe('GET /thing/X 401', () => {
+        it('tries to get a thing with invalid credentials', (done) => {
+            const promise = clientWithInvalidCredentials.thingService.getThingByName(constants.existingThing);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
+                .and.notify(done);
+        });
+    });
+
     describe('POST /things 401', () => {
         it('tries to get available things with invalid credentials', (done) => {
             const promise = clientWithInvalidCredentials.thingsService.getThings();
@@ -87,6 +98,26 @@ describe('Things', () => {
                 .and.have.property('statusCode', httpStatus.UNAUTHORIZED)
                 .and.notify(done);
         })
+    });
+
+    describe('GET /thing/X 404', () => {
+        it('tries to get a non existing thing', (done) => {
+            const promise = client.thingService.getThingByName(constants.nonExistingThing);
+            promise
+                .should.eventually.be.rejected
+                .and.have.property('statusCode', httpStatus.NOT_FOUND)
+                .and.notify(done);
+        });
+    });
+
+    describe('GET /thing/X 200', () => {
+        it('gets an existing thing', (done) => {
+            const promise = client.thingService.getThingByName(constants.existingThing);
+            promise
+                .should.eventually.be.fulfilled
+                .and.have.property('statusCode', httpStatus.OK)
+                .and.notify(done);
+        });
     });
 
     describe('GET /things 200', () => {
