@@ -1,14 +1,14 @@
 import chai from './lib/chai';
 import _ from 'underscore';
-import server from './lib/iot-backend/src/index';
-import serverConfig from './lib/iot-backend/src/config/index';
-import { UserModel } from './lib/iot-backend/src/models/user';
-import { SubscriptionModel } from './lib/iot-backend/src/models/subscription';
+import server from './lib/iot-server/src/index';
+import serverConfig from './lib/iot-server/src/config/index';
+import { UserModel } from './lib/iot-server/src/models/user';
+import { SubscriptionModel } from './lib/iot-server/src/models/subscription';
 import { TokenHandler } from "../src/helpers/tokenHandler";
 import IoTClient from '../src/index';
-import authConstants from './lib/iot-backend/test/constants/auth';
-import subscriptionConstants from './lib/iot-backend/test/constants/subscription';
-import responseKeys from './lib/iot-backend/src/utils/responseKeys';
+import authConstants from './lib/iot-server/test/constants/auth';
+import subscriptionConstants from './lib/iot-server/test/constants/subscription';
+import responseKeys from './lib/iot-server/src/utils/responseKeys';
 import httpStatus from 'http-status';
 
 const assert = chai.assert;

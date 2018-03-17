@@ -7,7 +7,7 @@
 
 [![NPM](https://nodei.co/npm/@mmontes11/iot-client.png)](https://nodei.co/npm/@mmontes11/iot-client)
 
-ES6 client library for consuming [IoT backend](https://github.com/mmontes11/iot-backend) REST API
+ES6 client library for consuming [IoT server](https://github.com/mmontes11/iot-server) REST API
 
 ### Installing
 

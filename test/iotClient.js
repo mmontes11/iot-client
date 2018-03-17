@@ -1,7 +1,7 @@
 import chai from './lib/chai';
-import serverConfig from './lib/iot-backend/src/config/index';
+import serverConfig from './lib/iot-server/src/config/index';
 import IoTClient from '../src/index';
-import serverConstants from './lib/iot-backend/test/constants/auth';
+import serverConstants from './lib/iot-server/test/constants/auth';
 
 const assert = chai.assert;
 const should = chai.should();
