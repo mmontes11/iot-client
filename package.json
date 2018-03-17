@@ -33,7 +33,8 @@
     "istanbul",
     "iot-client",
     "iot",
-    "internet-of-things"
+    "internet-of-things",
+    "iot-client"
   ],
   "author": "Martín Montes <martin11lrx@gmail.com>",
   "bugs": {
