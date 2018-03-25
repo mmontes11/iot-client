@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/mmontes11/iot-client.svg?branch=develop)](https://travis-ci.org/mmontes11/iot-client)
 [![Coverage Status](https://coveralls.io/repos/github/mmontes11/iot-client/badge.svg?branch=develop)](https://coveralls.io/github/mmontes11/iot-client?branch=develop)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![StackShare](https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/mmontes11/iot)
 
 [![NPM](https://nodei.co/npm/@mmontes11/iot-client.png)](https://nodei.co/npm/@mmontes11/iot-client)
 
