@@ -13,12 +13,12 @@ import defaultOptions from './config/defaultOptions'
 
 export default class IoTClient {
     constructor(optionsByParam) {
-        this.mandatoryParams = ["host", "basicAuthUsername", "basicAuthPassword", "username", "password"];
+        this.mandatoryParams = ["url", "basicAuthUsername", "basicAuthPassword", "username", "password"];
         if (this._areValidOptions(optionsByParam)) {
             const options = Object.assign({}, defaultOptions, optionsByParam);
             const basicAuthCredentials = new Credentials(options.basicAuthUsername, options.basicAuthPassword);
             const userCredentials = new Credentials(options.username, options.password);
-            this.host = options.host;
+            this.url = options.url;
             this.headers = options.headers;
             this.log = new Log(options.debug);
             this.authService = new AuthService(this, basicAuthCredentials, userCredentials);

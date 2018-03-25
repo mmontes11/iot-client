@@ -11,20 +11,20 @@ import httpStatus from 'http-status';
 
 const assert = chai.assert;
 const should = chai.should();
-const host = `http://localhost:${serverConfig.nodePort}`;
+const url = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
 const username = authConstants.validUser.username;
 const password = authConstants.validUser.password;
 const client = new IoTClient({
-    host,
+    url,
     basicAuthUsername,
     basicAuthPassword,
     username,
     password
 });
 const clientWithInvalidCredentials = new IoTClient({
-    host,
+    url,
     basicAuthUsername: 'foo',
     basicAuthPassword: 'bar',
     username: 'foo',

@@ -8,7 +8,7 @@ import { HTTPRequestParams } from '../models/httpRequestParams';
 export class Service {
     constructor(client, resource) {
         this.client = client;
-        this.urlBuilder = new URLBuilder(this.client.host, resource);
+        this.urlBuilder = new URLBuilder(this.client.url, resource);
     }
     async request(requestParams, shouldSetAccessToken) {
         let token = undefined;
