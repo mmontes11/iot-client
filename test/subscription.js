@@ -81,15 +81,15 @@ describe('Subscription', () => {
         });
     });
 
-    describe('POST /subscription 304', () => {
+    describe('POST /subscription 409', () => {
         it('tries to recreate an already created subscription', (done) => {
             const promise = client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
             promise
                 .then(() => {
                     const promise = client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
                     promise
-                        .should.eventually.be.fulfilled
-                        .and.have.property('statusCode', httpStatus.NOT_MODIFIED)
+                        .should.eventually.be.rejected
+                        .and.have.property('statusCode', httpStatus.CONFLICT)
                         .and.notify(done);
                 })
                 .catch((err) => {
