@@ -8,6 +8,7 @@ import { ThingService } from './services/thingService';
 import { ThingsService } from './services/thingsService';
 import { SubscriptionService } from './services/subscriptionService';
 import { SubscriptionsService } from './services/subscriptionsService';
+import { TopicsService } from './services/topicsService';
 import { Log } from './util/log';
 import defaultOptions from './config/defaultOptions'
 
@@ -29,6 +30,7 @@ export default class IoTClient {
             this.thingsService = new ThingsService(this);
             this.subscriptionService = new SubscriptionService(this);
             this.subscriptionsService = new SubscriptionsService(this);
+            this.topicsService = new TopicsService(this);
         } else {
             throw new Error(`IoT Client misconfiguration. Mandatory params: ${this.mandatoryParams.join(', ')}`);
         }
