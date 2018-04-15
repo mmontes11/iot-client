@@ -62,7 +62,7 @@ describe('Measurement', () => {
     });
 
     describe('POST /measurement 401', () => {
-        it('tries to createUser a measurement with invalid credentials', (done) => {
+        it('tries to create a measurement with invalid credentials', (done) => {
             const promise = clientWithInvalidCredentials.measurementService.create(serverConstants.temperatureMeasurement);
             promise
                 .should.eventually.be.rejected
@@ -82,7 +82,7 @@ describe('Measurement', () => {
     });
 
     describe('POST /measurement 400', () => {
-        it('tries to createUser a an invalid measurement', (done) => {
+        it('tries to create an invalid measurement', (done) => {
             const promise = client.measurementService.create(serverConstants.invalidMeasurementRequest);
             promise
                 .should.eventually.be.rejected
@@ -91,7 +91,7 @@ describe('Measurement', () => {
         });
     });
 
-    describe('POST /measurement', () => {
+    describe('POST /measurement 200', () => {
         it('creates a measurement', (done) => {
             const promise = client.measurementService.create(serverConstants.validMeasurementRequestWithThingInNYC);
             promise

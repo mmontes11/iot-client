@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import { Credentials } from './models/credentials';
 import { AuthService } from './services/authService';
+import { EventService } from './services/eventService';
 import { MeasurementService } from './services/observationService';
 import { ObservationsService } from './services/observationsService';
 import { TimePeriodsService } from './services/timePeriodsService';
@@ -23,6 +24,7 @@ export default class IoTClient {
             this.headers = options.headers;
             this.log = new Log(options.debug);
             this.authService = new AuthService(this, basicAuthCredentials, userCredentials);
+            this.eventService = new EventService(this);
             this.measurementService = new MeasurementService(this);
             this.observationsService = new ObservationsService(this);
             this.timePeriodsService = new TimePeriodsService(this);
