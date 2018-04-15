@@ -6,10 +6,14 @@ export class Log {
         this.debug = debug;
     }
     logInfo(message) {
-        winston.info(message);
+        if (this.debug) {
+            winston.info(message);
+        }
     }
     logError(message) {
-        winston.error(message);
+        if (this.debug) {
+            winston.error(message);
+        }
     }
     logRequest(request, id) {
         if (this.debug) {
