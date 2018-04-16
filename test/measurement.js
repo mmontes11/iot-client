@@ -259,29 +259,5 @@ describe('Measurement', () => {
                     done(err);
                 });
         });
-        it('gets stats by coordinates', (done) => {
-            const promise = client.measurementService.getStatsByCoordinates(clientConstants.availableCoordinates.longitude, clientConstants.availableCoordinates.latitude, 100);
-            promise
-                .then((result) => {
-                    result.statusCode.should.be.equal(httpStatus.OK);
-                    should.exist(result.body);
-                    done();
-                })
-                .catch((err) => {
-                    done(err);
-                });
-        });
-        it('gets stats by address', (done) => {
-            const promise = client.measurementService.getStatsByAddress(clientConstants.availableAddress, 10000);
-            promise
-                .then((result) => {
-                    result.statusCode.should.be.equal(httpStatus.OK);
-                    should.exist(result.body);
-                    done();
-                })
-                .catch((err) => {
-                    done(err);
-                });
-        });
     })
 });
