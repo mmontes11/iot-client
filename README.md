@@ -8,15 +8,27 @@
 
 ES6 client library for consuming [IoT server](https://github.com/mmontes11/iot-server) REST API
 
+### Lint
+
+```bash
+$ npm run lint
+```
+
+### Test and Coverage
+
+```bash
+$ npm test
+```
+
 ### Installing
 
 ```bash
-$ npm i @mmontes11/iot-client --save
+$ npm i --save @mmontes11/iot-client
 ```
 
 ### Usage example
 
-``` javascript
+```javascript
 import IoTClient from "@mmontes11/iot-client";
 
 const iotClient = new IoTClient({
