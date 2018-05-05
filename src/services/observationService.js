@@ -1,14 +1,8 @@
 import { Service } from "./service";
 
 class ObservationService extends Service {
-  async create(measurement) {
-    return this.post(undefined, undefined, measurement);
-  }
-}
-
-class MeasurementService extends ObservationService {
-  constructor(client) {
-    super(client, "measurement");
+  async create(observation) {
+    return this.post(undefined, undefined, observation);
   }
   async getStats(query) {
     const options = {
@@ -36,4 +30,16 @@ class MeasurementService extends ObservationService {
   }
 }
 
-export { ObservationService, MeasurementService };
+class EventService extends ObservationService {
+  constructor(client) {
+    super(client, "event");
+  }
+}
+
+class MeasurementService extends ObservationService {
+  constructor(client) {
+    super(client, "measurement");
+  }
+}
+
+export { ObservationService, EventService, MeasurementService };

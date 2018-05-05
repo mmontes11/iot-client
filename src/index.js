@@ -1,8 +1,7 @@
 import _ from "underscore";
 import { Credentials } from "./models/credentials";
 import { AuthService } from "./services/authService";
-import { EventService } from "./services/eventService";
-import { MeasurementService } from "./services/observationService";
+import { EventService, MeasurementService } from "./services/observationService";
 import { ObservationsService } from "./services/observationsService";
 import { TimePeriodsService } from "./services/timePeriodsService";
 import { ThingService } from "./services/thingService";

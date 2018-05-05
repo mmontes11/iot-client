@@ -31,7 +31,7 @@ const clientWithInvalidCredentials = new IoTClient({
   password: "bar",
 });
 
-describe("Measurement", () => {
+describe("Observation", () => {
   before(done => {
     TokenHandler.invalidateToken();
     assert(TokenHandler.getTokenFromStorage() === undefined, "Token should be undefined");
