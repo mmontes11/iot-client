@@ -235,4 +235,24 @@ describe("Observation", () => {
         });
     });
   });
+
+  describe("GET /measurement/last?thing=X&type=Y 404", () => {
+    it("tries to get las measurement of a non existing thing", done => {
+      const promise = client.measurementService.getLast(clientConstants.notAvailableThing, client.notAvailableType);
+      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    });
+  });
+
+  describe("GET /measurement/last?thing=X&type=Y 200", () => {
+    beforeEach(done => {
+      client.measurementService
+        .create(serverConstants.validMeasurementRequestWithThingInNYC)
+        .then(() => done())
+        .catch(err => done(err));
+    });
+    it("gets last measurement of a thing", done => {
+      const promise = client.measurementService.getLast(clientConstants.availableThing, client.availableType);
+      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.OK).and.notify(done);
+    });
+  });
 });

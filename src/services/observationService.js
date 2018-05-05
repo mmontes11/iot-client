@@ -28,6 +28,15 @@ class ObservationService extends Service {
   async getStatsByAddress(address, maxDistance) {
     return this.getStats({ address, maxDistance });
   }
+  async getLast(thing, type) {
+    const options = {
+      query: {
+        thing,
+        type,
+      },
+    };
+    return this.get("last", options);
+  }
 }
 
 class EventService extends ObservationService {
