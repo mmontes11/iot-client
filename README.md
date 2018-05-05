@@ -26,7 +26,7 @@ $ npm test
 $ npm i --save @mmontes11/iot-client
 ```
 
-### Usage example
+### Usage
 
 ```javascript
 import IoTClient from "@mmontes11/iot-client";
