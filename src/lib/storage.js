@@ -1,4 +1,4 @@
-import nodePersist from 'node-persist';
+import nodePersist from "node-persist";
 
 nodePersist.initSync();
 

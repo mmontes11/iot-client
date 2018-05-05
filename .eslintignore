@@ -34,3 +34,6 @@ coverage
 
 # Node persist
 .node-persist
+
+# IoT server for testing
+test/lib/iot-server/

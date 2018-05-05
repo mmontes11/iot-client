@@ -1,4 +1,4 @@
 export default {
-    nonExistingThing: "foo",
-    existingThing: "raspi-coruna"
+  nonExistingThing: "foo",
+  existingThing: "raspi-coruna",
 };
