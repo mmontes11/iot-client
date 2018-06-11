@@ -15,16 +15,16 @@ export class AuthService extends Service {
     return this._postWithBasicAuthCredentials("user", user);
   }
   async getToken() {
-    const tokenFromStorage = TokenHandler.getTokenFromStorage();
+    const tokenFromStorage = await TokenHandler.getToken();
     if (_.isUndefined(tokenFromStorage)) {
       try {
         const {
           body: { token },
         } = await this._getToken();
-        TokenHandler.storeToken(token);
+        await TokenHandler.storeToken(token);
         return token;
       } catch (err) {
-        TokenHandler.invalidateToken();
+        await TokenHandler.invalidateToken();
         throw err;
       }
     } else {

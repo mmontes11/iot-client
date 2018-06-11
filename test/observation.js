@@ -9,6 +9,7 @@ import IoTClient from "../src/index";
 import serverConstants from "./lib/iot-server/test/constants/measurement";
 import clientConstants from "./constants/measurement";
 import authConstants from "./lib/iot-server/test/constants/auth";
+import "./lib/iot-server/src/index";
 
 const { assert } = chai;
 const should = chai.should();
@@ -32,20 +33,11 @@ const clientWithInvalidCredentials = new IoTClient({
 });
 
 describe("Observation", () => {
-  before(done => {
-    TokenHandler.invalidateToken();
-    assert(TokenHandler.getTokenFromStorage() === undefined, "Token should be undefined");
-    UserModel.remove({}, err => {
-      assert(err !== undefined, "Error cleaning MongoDB for tests");
-      client.authService
-        .createUser(authConstants.validUser)
-        .then(() => {
-          done();
-        })
-        .catch(() => {
-          done(err);
-        });
-    });
+  before(async () => {
+    await TokenHandler.invalidateToken();
+    assert((await TokenHandler.getToken()) === undefined, "Token should be undefined");
+    await UserModel.remove({});
+    await client.authService.createUser(authConstants.validUser);
   });
 
   beforeEach(done => {
@@ -177,6 +169,10 @@ describe("Observation", () => {
         .catch(err => {
           done(err);
         });
+    });
+    it("gets stats by time period", done => {
+      const promise = client.measurementService.getStatsByTimePeriod(clientConstants.timePeriod);
+      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.OK).and.notify(done);
     });
   });
 

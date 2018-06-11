@@ -45,11 +45,11 @@ export class HTTPRequest {
             body: data,
           });
         })
-        .on("fail", (data, response) => {
+        .on("fail", async (data, response) => {
           log.logInfo(`Request ${requestId} failed`);
           log.logResponse(data, response, requestId);
           if (_.isEqual(response.statusCode, httpStatus.UNAUTHORIZED)) {
-            TokenHandler.invalidateToken();
+            await TokenHandler.invalidateToken();
           }
           reject(new HTTPError(response.statusCode, response.headers, data));
         })
