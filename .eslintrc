@@ -1,6 +1,7 @@
 {
   "env": {
-    "mocha": true
+    "mocha": true,
+    "browser": true
   },
   "extends": ["mmontes11-node"]
 }

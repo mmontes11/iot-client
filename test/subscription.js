@@ -9,11 +9,9 @@ import IoTClient from "../src/index";
 import authConstants from "./lib/iot-server/test/constants/auth";
 import subscriptionConstants from "./lib/iot-server/test/constants/subscription";
 import responseKeys from "./lib/iot-server/src/utils/responseKeys";
-import server from "./lib/iot-server/src/index";
+import "./lib/iot-server/src/index";
 
 const { assert } = chai;
-assert(server !== undefined, "Error starting NodeJS server for tests");
-
 const url = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
@@ -34,20 +32,11 @@ const clientWithInvalidCredentials = new IoTClient({
 });
 
 describe("Subscription", () => {
-  before(done => {
-    TokenHandler.invalidateToken();
-    assert(TokenHandler.getTokenFromStorage() === undefined, "Token should be undefined");
-    UserModel.remove({}, err => {
-      assert(err !== undefined, "Error cleaning MongoDB for tests");
-      client.authService
-        .createUser(authConstants.validUser)
-        .then(() => {
-          done();
-        })
-        .catch(authErr => {
-          done(authErr);
-        });
-    });
+  before(async () => {
+    await TokenHandler.invalidateToken();
+    assert((await TokenHandler.getToken()) === undefined, "Token should be undefined");
+    await UserModel.remove({});
+    await client.authService.createUser(authConstants.validUser);
   });
 
   beforeEach(done => {
