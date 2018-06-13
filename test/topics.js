@@ -31,33 +31,33 @@ describe("Topics", () => {
     await client.authService.createUser(authConstants.validUser);
   });
 
-  before(done => {
-    TopicModel.remove({})
-      .then(() => done())
-      .catch(err => done(err));
+  before(async () => {
+    await TopicModel.remove({});
   });
 
   describe("GET /topics 404", () => {
-    it("tries to get topics but no one has been created yet", done => {
-      const promise = client.topicsService.getTopics();
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("tries to get topics but no one has been created yet", async () => {
+      try {
+        const { statusCode } = await client.topicsService.getTopics();
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
   });
 
   describe("GET /topics 200", () => {
-    before(done => {
+    before(async () => {
       const topics = [topicsConstants.validTopic, topicsConstants.validTopic2, topicsConstants.validTopic3];
       const promises = _.map(topics, topic => {
         const newTopic = new TopicModel(topic);
         return newTopic.save();
       });
-      Promise.all(promises)
-        .then(() => done())
-        .catch(err => done(err));
+      await Promise.all(promises);
     });
-    it("gets topics", done => {
-      const promise = client.topicsService.getTopics();
-      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.OK).and.notify(done);
+    it("gets topics", async () => {
+      const { statusCode } = await client.topicsService.getTopics();
+      statusCode.should.equal(httpStatus.OK);
     });
   });
 });

@@ -11,38 +11,27 @@ const { username, password } = serverConstants.validUser;
 
 describe("IoT Client", () => {
   describe("IoT Client initialization with error", () => {
-    it("tries to create an instance of IoT Client with invalid params", done => {
-      let iotClient;
-      try {
-        iotClient = new IoTClient({
-          url,
-        });
-        should.exist(iotClient);
-        done(new Error("IoT Client initialization with invalid params should fail"));
-      } catch (err) {
-        should.not.exist(iotClient);
-        done();
-      }
-    });
+    let iotClient;
+    try {
+      iotClient = new IoTClient({
+        url,
+      });
+    } catch (err) {
+      should.exist(err);
+    }
+    should.not.exist(iotClient);
   });
 
   describe("IoT Client successfully initialization", () => {
-    it("creates an instance of IoT Client", done => {
-      let iotClient;
-      try {
-        iotClient = new IoTClient({
-          url,
-          basicAuthUsername,
-          basicAuthPassword,
-          username,
-          password,
-        });
-        should.exist(iotClient);
-        done();
-      } catch (err) {
-        should.not.exist(iotClient);
-        done(err);
-      }
+    it("creates an instance of IoT Client", () => {
+      const iotClient = new IoTClient({
+        url,
+        basicAuthUsername,
+        basicAuthPassword,
+        username,
+        password,
+      });
+      should.exist(iotClient);
     });
   });
 });

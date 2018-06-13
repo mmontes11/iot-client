@@ -8,7 +8,6 @@ import authConstants from "./lib/iot-server/test/constants/auth";
 import "./lib/iot-server/src/index";
 
 const { assert } = chai;
-const should = chai.should();
 const url = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
@@ -37,24 +36,20 @@ describe("TimePeriod", () => {
   });
 
   describe("POST /timePeriods 401", () => {
-    it("tries to get supported time periods with invalid credentials", done => {
-      const promise = clientWithInvalidCredentials.timePeriodsService.getSupportedTimePeriods();
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.UNAUTHORIZED).and.notify(done);
+    it("tries to get supported time periods with invalid credentials", async () => {
+      try {
+        const { statusCode } = await clientWithInvalidCredentials.timePeriodsService.getSupportedTimePeriods();
+        assert(statusCode, httpStatus.UNAUTHORIZED, "Request should return 401 Unauthorized");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.UNAUTHORIZED);
+      }
     });
   });
 
   describe("POST /timePeriods 200", () => {
-    it("gets supported time periods", done => {
-      const promise = client.timePeriodsService.getSupportedTimePeriods();
-      promise
-        .then(result => {
-          result.statusCode.should.be.equal(httpStatus.OK);
-          should.exist(result.body);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+    it("gets supported time periods", async () => {
+      const { statusCode } = await client.timePeriodsService.getSupportedTimePeriods();
+      statusCode.should.equal(httpStatus.OK);
     });
   });
 });
