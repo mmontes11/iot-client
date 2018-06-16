@@ -7,11 +7,9 @@ import IoTClient from "../src/index";
 import serverConstants from "./lib/iot-server/test/constants/auth";
 import clientConstants from "./constants/auth";
 import measurementConstants from "./lib/iot-server/test/constants/measurement";
-import server from "./lib/iot-server/src/index";
+import "./lib/iot-server/src/index";
 
 const { assert } = chai;
-assert(server !== undefined, "Error starting NodeJS server for tests");
-
 const should = chai.should();
 const url = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
@@ -33,151 +31,126 @@ const clientWithInvalidCredentials = new IoTClient({
 });
 
 describe("Auth", () => {
-  beforeEach(done => {
-    TokenHandler.invalidateToken();
-    assert(TokenHandler.getTokenFromStorage() === undefined, "Token should be undefined");
-    UserModel.remove({}, err => {
-      assert(err !== undefined, "Error cleaning MongoDB for tests");
-      client.authService
-        .createUser(serverConstants.validUser)
-        .then(() => {
-          done();
-        })
-        .catch(authErr => {
-          done(authErr);
-        });
+  beforeEach(async () => {
+    await TokenHandler.invalidateToken();
+    assert((await TokenHandler.getToken()) === undefined, "Token should be undefined");
+    await UserModel.remove({});
+    await client.authService.createUser(serverConstants.validUser);
+  });
+
+  describe("POST /auth 401", () => {
+    it("tries to check auth with invalid credentials", async () => {
+      try {
+        const { statusCode } = await clientWithInvalidCredentials.authService.checkAuth(serverConstants.validUser);
+        assert.fail(statusCode, httpStatus.UNAUTHORIZED, "Request should return 401 Unauthorized");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.UNAUTHORIZED);
+      }
     });
   });
 
   describe("POST /auth 401", () => {
-    it("tries to check auth with invalid credentials", done => {
-      const promise = clientWithInvalidCredentials.authService.checkAuth(serverConstants.validUser);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.UNAUTHORIZED).and.notify(done);
-    });
-  });
-
-  describe("POST /auth 401", () => {
-    it("checks auth of an user with invalid credentials", done => {
-      const promise = client.authService.checkAuth(serverConstants.invalidUser);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.UNAUTHORIZED).and.notify(done);
+    it("checks auth of an user with invalid credentials", async () => {
+      try {
+        const { statusCode } = await client.authService.checkAuth(serverConstants.invalidUser);
+        assert.fail(statusCode, httpStatus.UNAUTHORIZED, "Request should return 401 Unauthorized");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.UNAUTHORIZED);
+      }
     });
   });
 
   describe("POST /auth 200", () => {
-    it("checks auth of an user with valid credentials", done => {
-      const promise = client.authService.checkAuth(serverConstants.validUser);
-      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.OK).and.notify(done);
+    it("checks auth of an user with valid credentials", async () => {
+      const { statusCode } = await client.authService.checkAuth(serverConstants.validUser);
+      statusCode.should.equal(httpStatus.OK);
     });
   });
 
   describe("POST /auth/user 401", () => {
-    it("tries to create user a user with invalid credentials", done => {
-      const promise = clientWithInvalidCredentials.authService.createUser(serverConstants.validUser);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.UNAUTHORIZED).and.notify(done);
+    it("tries to create user a user with invalid credentials", async () => {
+      try {
+        const { statusCode } = await clientWithInvalidCredentials.authService.createUser(serverConstants.validUser);
+        assert.fail(statusCode, httpStatus.UNAUTHORIZED, "Request should return 401 Unauthorized");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.UNAUTHORIZED);
+      }
     });
   });
 
   describe("POST /auth/user 400", () => {
-    it("tries to createUser an invalid user", done => {
-      const promise = client.authService.createUser(serverConstants.invalidUser);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("tries to createUser an invalid user", async () => {
+      try {
+        const { statusCode } = await client.authService.createUser(serverConstants.invalidUser);
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
-    it("tries to createUser a user with weak password", done => {
-      const promise = client.authService.createUser(serverConstants.userWithWeakPassword);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("tries to createUser a user with weak password", async () => {
+      try {
+        const { statusCode } = await client.authService.createUser(serverConstants.userWithWeakPassword);
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe("POST /auth/user 409", () => {
-    it("creates the same user twice", done => {
-      UserModel.remove({}, err => {
-        assert(err !== undefined, "Error cleaning MongoDB for tests");
-        client.authService
-          .createUser(serverConstants.validUser)
-          .then(() => {
-            const promise = client.authService.createUser(serverConstants.validUser);
-            promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.CONFLICT).and.notify(done);
-          })
-          .catch(authErr => {
-            done(authErr);
-          });
-      });
+    it("creates the same user twice", async () => {
+      await UserModel.remove({});
+      await client.authService.createUser(serverConstants.validUser);
+      try {
+        const { statusCode } = await client.authService.createUser(serverConstants.validUser);
+        assert.fail(statusCode, httpStatus.CONFLICT, "Request should return 409 Conflict");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.CONFLICT);
+      }
     });
   });
 
   describe("POST /auth/user 200", () => {
-    it("creates a user", done => {
-      UserModel.remove({}, err => {
-        assert(err !== undefined, "Error cleaning MongoDB for tests");
-        const promise = client.authService.createUser(serverConstants.validUser);
-        promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.CREATED).and.notify(done);
-      });
+    it("creates a user", async () => {
+      await UserModel.remove({});
+      const { statusCode } = await client.authService.createUser(serverConstants.validUser);
+      statusCode.should.equal(httpStatus.CREATED);
     });
   });
 
   describe("POST /auth/token 401", () => {
-    it("tries to get a token with a non existing user", done => {
-      const promise = clientWithInvalidCredentials.authService.getToken();
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.UNAUTHORIZED).and.notify(done);
+    it("tries to get a token with invalid credentials", async () => {
+      try {
+        const { statusCode } = await clientWithInvalidCredentials.authService.getToken();
+        assert.fail(statusCode, httpStatus, "Request should return 401 Unauthorized");
+      } catch (err) {
+        err.should.have.property("statusCode", httpStatus.UNAUTHORIZED);
+      }
     });
-    it("tries to get a token with an user with invalid credentials", done => {
-      clientWithInvalidCredentials.authService
-        .getToken()
-        .then(() => {
-          done(new Error("Promise should be rejected"));
-        })
-        .catch(err => {
-          should.exist(err);
-          should.not.exist(TokenHandler.getTokenFromStorage());
-          done();
-        });
-    });
-    it("tries to use an invalid token in a request that requires auth and then deletes it", done => {
-      TokenHandler.storeToken(clientConstants.invalidToken);
-      client.measurementService
-        .create(measurementConstants.validMeasurementRequestWithThingInNYC)
-        .then(() => {
-          done(new Error("Request should fail and return a 401 Unauthorized"));
-        })
-        .catch(() => {
-          should.not.exist(TokenHandler.getTokenFromStorage());
-          done();
-        });
+    it("tries to use an invalid token in a request that requires auth and then deletes it", async () => {
+      await TokenHandler.storeToken(clientConstants.invalidToken);
+      try {
+        const { statusCode } = await client.measurementService.create(
+          measurementConstants.validMeasurementRequestWithThingInNYC,
+        );
+        assert(statusCode, httpStatus.UNAUTHORIZED, "Request should fail and return a 401 Unauthorized");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.UNAUTHORIZED);
+        should.not.exist(await TokenHandler.getToken());
+      }
     });
   });
 
   describe("POST /auth/token 200", () => {
-    it("gets a token for a valid user", done => {
-      client.authService
-        .getToken()
-        .then(token => {
-          token.should.be.equal(TokenHandler.getTokenFromStorage());
-          client.authService
-            .getToken()
-            .then(innerToken => {
-              innerToken.should.be.equal(TokenHandler.getTokenFromStorage());
-              done();
-            })
-            .catch(err => {
-              done(err);
-            });
-        })
-        .catch(err => {
-          done(err);
-        });
+    it("gets a token for a valid user", async () => {
+      const token = await client.authService.getToken();
+      token.should.equal(await TokenHandler.getToken());
     });
-    it("gets a token for a valid user and then deletes it", done => {
-      client.authService
-        .getToken()
-        .then(token => {
-          token.should.be.equal(TokenHandler.getTokenFromStorage());
-          TokenHandler.invalidateToken();
-          should.not.exist(TokenHandler.getTokenFromStorage());
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+    it("gets a token for a valid user and then deletes it", async () => {
+      const token = await client.authService.getToken();
+      token.should.equal(await TokenHandler.getToken());
+      await TokenHandler.invalidateToken();
+      should.not.exist(await TokenHandler.getToken());
     });
   });
 });

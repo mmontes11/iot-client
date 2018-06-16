@@ -7,11 +7,9 @@ import IoTClient from "../src/index";
 import observationConstants from "./lib/iot-server/test/constants/observations";
 import authConstants from "./lib/iot-server/test/constants/auth";
 import thingConstants from "./lib/iot-server/test/constants/thing";
-import server from "./lib/iot-server/src/index";
+import "./lib/iot-server/src/index";
 
 const { assert } = chai;
-assert(server !== undefined, "Error starting NodeJS server for tests");
-
 const url = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
@@ -32,76 +30,79 @@ const clientWithInvalidCredentials = new IoTClient({
 });
 
 describe("Observations", () => {
-  before(done => {
-    TokenHandler.invalidateToken();
-    assert(TokenHandler.getTokenFromStorage() === undefined, "Token should be undefined");
-    UserModel.remove({}, err => {
-      assert(err !== undefined, "Error cleaning MongoDB for tests");
-      client.authService
-        .createUser(authConstants.validUser)
-        .then(() => {
-          done();
-        })
-        .catch(() => {
-          done(err);
-        });
-    });
+  before(async () => {
+    await TokenHandler.invalidateToken();
+    assert((await TokenHandler.getToken()) === undefined, "Token should be undefined");
+    await UserModel.remove({});
+    await client.authService.createUser(authConstants.validUser);
   });
 
   describe("POST /observations 401", () => {
-    it("tries to createUser observations with invalid credentials", done => {
-      const promise = clientWithInvalidCredentials.observationsService.create(
-        observationConstants.temperatureMeasurement,
-      );
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.UNAUTHORIZED).and.notify(done);
+    it("tries to createUser observations with invalid credentials", async () => {
+      try {
+        const { statusCode } = await clientWithInvalidCredentials.observationsService.create(
+          observationConstants.temperatureMeasurement,
+        );
+        assert.fail(statusCode, httpStatus.UNAUTHORIZED, "Request should return 401 Unauthorized");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.UNAUTHORIZED);
+      }
     });
   });
 
   describe("POST /observations 304", () => {
-    it("tries to createUser observations using an empty array", done => {
+    it("tries to createUser observations using an empty array", async () => {
       const emptyObservations = {
         observations: [],
       };
-      const promise = client.observationsService.create(emptyObservations);
-      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.NOT_MODIFIED).and.notify(done);
+      const { statusCode } = await client.observationsService.create(emptyObservations);
+      statusCode.should.equal(httpStatus.NOT_MODIFIED);
     });
   });
 
   describe("POST /observations 400", () => {
-    it("tries to createUser observations using an invalid payload", done => {
-      const invalidPayload = {
-        foo: [],
-      };
-      const promise = client.observationsService.create(invalidPayload);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("tries to createUser observations using an invalid payload", async () => {
+      try {
+        const invalidPayload = {
+          foo: [],
+        };
+        const { statusCode } = await client.observationsService.create(invalidPayload);
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
-    it("tries to createUser invalid observations", done => {
-      const invalidObservations = {
-        observations: [
-          observationConstants.invalidMeasurementWithKind,
-          observationConstants.validMeasurementWithInvalidKind,
-          observationConstants.invalidEventWithKind,
-          observationConstants.validEventWithInvalidKind,
-        ],
-      };
-      const promise = client.observationsService.create(invalidObservations);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("tries to createUser invalid observations", async () => {
+      try {
+        const invalidObservations = {
+          observations: [
+            observationConstants.invalidMeasurementWithKind,
+            observationConstants.validMeasurementWithInvalidKind,
+            observationConstants.invalidEventWithKind,
+            observationConstants.validEventWithInvalidKind,
+          ],
+        };
+        const { statusCode } = await client.observationsService.create(invalidObservations);
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe("POST /observations 201", () => {
-    it("creates observations", done => {
+    it("creates observations", async () => {
       const validObservations = {
         observations: [observationConstants.validMeasurementWithKind, observationConstants.validEventWithKind],
         thing: thingConstants.thingAtNYC,
       };
-      const promise = client.observationsService.create(validObservations);
-      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.CREATED).and.notify(done);
+      const { statusCode } = await client.observationsService.create(validObservations);
+      statusCode.should.equal(httpStatus.CREATED);
     });
   });
 
   describe("POST /observations 207", () => {
-    it("creates observations and also tries to createUser invalid ones", done => {
+    it("creates observations and also tries to createUser invalid ones", async () => {
       const measurements = [
         observationConstants.validMeasurementWithKind,
         observationConstants.validMeasurementWithInvalidKind,
@@ -116,8 +117,8 @@ describe("Observations", () => {
         observations: [...measurements, ...events],
         thing: thingConstants.thingAtNYC,
       };
-      const promise = client.observationsService.create(validAndInvalidObservations);
-      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.MULTI_STATUS).and.notify(done);
+      const { statusCode } = await client.observationsService.create(validAndInvalidObservations);
+      statusCode.should.equal(httpStatus.MULTI_STATUS);
     });
   });
 });

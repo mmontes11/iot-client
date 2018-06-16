@@ -9,11 +9,9 @@ import IoTClient from "../src/index";
 import authConstants from "./lib/iot-server/test/constants/auth";
 import subscriptionConstants from "./lib/iot-server/test/constants/subscription";
 import responseKeys from "./lib/iot-server/src/utils/responseKeys";
-import server from "./lib/iot-server/src/index";
+import "./lib/iot-server/src/index";
 
 const { assert } = chai;
-assert(server !== undefined, "Error starting NodeJS server for tests");
-
 const url = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
@@ -34,164 +32,160 @@ const clientWithInvalidCredentials = new IoTClient({
 });
 
 describe("Subscription", () => {
-  before(done => {
-    TokenHandler.invalidateToken();
-    assert(TokenHandler.getTokenFromStorage() === undefined, "Token should be undefined");
-    UserModel.remove({}, err => {
-      assert(err !== undefined, "Error cleaning MongoDB for tests");
-      client.authService
-        .createUser(authConstants.validUser)
-        .then(() => {
-          done();
-        })
-        .catch(authErr => {
-          done(authErr);
-        });
-    });
+  before(async () => {
+    await TokenHandler.invalidateToken();
+    assert((await TokenHandler.getToken()) === undefined, "Token should be undefined");
+    await UserModel.remove({});
+    await client.authService.createUser(authConstants.validUser);
   });
 
-  beforeEach(done => {
+  beforeEach(async () => {
     const promises = [SubscriptionModel.remove({})];
-    Promise.all(promises)
-      .then(() => {
-        done();
-      })
-      .catch(err => {
-        done(err);
-      });
+    await Promise.all(promises);
   });
 
   describe("POST /subscription 401", () => {
-    it("tries to create a subscription with invalid credentials", done => {
-      const promise = clientWithInvalidCredentials.subscriptionService.subscribe(
-        subscriptionConstants.validSubscription,
-      );
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.UNAUTHORIZED).and.notify(done);
+    it("tries to create a subscription with invalid credentials", async () => {
+      try {
+        const { statusCode } = await clientWithInvalidCredentials.subscriptionService.subscribe(
+          subscriptionConstants.validSubscription,
+        );
+        assert.fail(statusCode, httpStatus.UNAUTHORIZED, "Request should return 401 Unauthorized");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.UNAUTHORIZED);
+      }
     });
   });
 
   describe("POST /subscription 400", () => {
-    it("tries to create an invalid subscription", done => {
-      const promise = client.subscriptionService.subscribe(subscriptionConstants.invalidSubscription);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("tries to create an invalid subscription", async () => {
+      try {
+        const { statusCode } = await client.subscriptionService.subscribe(subscriptionConstants.invalidSubscription);
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe("POST /subscription 409", () => {
-    it("tries to recreate an already created subscription", done => {
-      const promise = client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
-      promise
-        .then(() => {
-          const innerPromise = client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
-          innerPromise.should.eventually.be.rejected.and.have
-            .property("statusCode", httpStatus.CONFLICT)
-            .and.notify(done);
-        })
-        .catch(err => {
-          done(err);
-        });
+    it("tries to recreate an already created subscription", async () => {
+      await client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
+      try {
+        const { statusCode } = await client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
+        assert.fail(statusCode, httpStatus.CONFLICT, "Request should return 409 Conflict");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.CONFLICT);
+      }
     });
   });
 
   describe("POST /subscription 201", () => {
-    it("creates a subscription", done => {
-      const promise = client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
-      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.CREATED).and.notify(done);
+    it("creates a subscription", async () => {
+      const { statusCode } = await client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
+      statusCode.should.equal(httpStatus.CREATED);
     });
   });
 
   describe("DELETE /subscription 400", () => {
-    it("tries to delete a subscription with an invalid subscription ID", done => {
-      const promise = client.subscriptionService.unSubscribe(subscriptionConstants.invalidSubscriptionId);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("tries to delete a subscription with an invalid subscription ID", async () => {
+      try {
+        const { statusCode } = await client.subscriptionService.unSubscribe(
+          subscriptionConstants.invalidSubscriptionId,
+        );
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe("DELETE /subscription 404", () => {
-    it("tries to delete a subscription  with non existing with subscription ID", done => {
-      const promise = client.subscriptionService.unSubscribe(subscriptionConstants.nonExistingSubscriptionId);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("tries to delete a subscription  with non existing with subscription ID", async () => {
+      try {
+        const { statusCode } = await client.subscriptionService.unSubscribe(
+          subscriptionConstants.nonExistingSubscriptionId,
+        );
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
   });
 
   describe("DELETE /subscription 201", () => {
-    it("deletes a subscription", done => {
-      client.subscriptionService
-        .subscribe(subscriptionConstants.validSubscription)
-        .then(res => {
-          const subscriptionId = res.body._id;
-          const promise = client.subscriptionService.unSubscribe(subscriptionId);
-          promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.OK).and.notify(done);
-        })
-        .catch(err => {
-          done(err);
-        });
+    it("deletes a subscription", async () => {
+      const {
+        body: { _id: subscriptionId },
+      } = await client.subscriptionService.subscribe(subscriptionConstants.validSubscription);
+      const { statusCode } = await client.subscriptionService.unSubscribe(subscriptionId);
+      statusCode.should.equal(httpStatus.OK);
     });
   });
 
   describe("GET /subscriptions 400", () => {
-    it("tries to get subscriptions but no chatId query param is specified", done => {
-      const promise = client.subscriptionsService.getSubscriptionsByChat();
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("tries to get subscriptions but no chatId query param is specified", async () => {
+      try {
+        const { statusCode } = await client.subscriptionsService.getSubscriptionsByChat();
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
-    it("tries to get subscriptions with an invalid chatId query param", done => {
-      const promise = client.subscriptionsService.getSubscriptionsByChat(subscriptionConstants.invalidChatId);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("tries to get subscriptions with an invalid chatId query param", async () => {
+      try {
+        const { statusCode } = await client.subscriptionsService.getSubscriptionsByChat(
+          subscriptionConstants.invalidChatId,
+        );
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe("GET /subscriptions 404", () => {
-    it("tries to get subscriptions but no one has been created yet", done => {
-      const promise = client.subscriptionsService.getSubscriptionsByChat(subscriptionConstants.validChatId);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("tries to get subscriptions but no one has been created yet", async () => {
+      try {
+        const { statusCode } = await client.subscriptionsService.getSubscriptionsByChat(
+          subscriptionConstants.validChatId,
+        );
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
   });
 
   describe("GET /subscriptions 200", () => {
-    it("gets subscriptions", done => {
-      const subscriptions = [
+    it("gets subscriptions", async () => {
+      const validSubscriptions = [
         subscriptionConstants.validSubscription,
         subscriptionConstants.validSubscription2,
         subscriptionConstants.validSubscription3,
       ];
-      const promises = _.map(subscriptions, subscription => {
+      const promises = _.map(validSubscriptions, subscription => {
         const newSubscription = new SubscriptionModel(subscription);
         return newSubscription.save();
       });
-      Promise.all(promises)
-        .then(() => {
-          client.subscriptionsService
-            .getSubscriptionsByChat(subscriptionConstants.validChatId2)
-            .then(res => {
-              res.should.have.property("statusCode", httpStatus.OK);
-              res.body[responseKeys.subscriptionsArrayKey].length.should.be.eql(2);
-              const subscriptionId = _.first(res.body[responseKeys.subscriptionsArrayKey])._id;
+      await Promise.all(promises);
 
-              client.subscriptionService
-                .unSubscribe(subscriptionId)
-                .then(() => {
-                  client.subscriptionsService
-                    .getSubscriptionsByChat(subscriptionConstants.validChatId)
-                    .then(subscriptionsByChatRes => {
-                      subscriptionsByChatRes.should.have.property("statusCode", httpStatus.OK);
-                      subscriptionsByChatRes.body[responseKeys.subscriptionsArrayKey].length.should.be.eql(1);
-                      done();
-                    })
-                    .catch(err => {
-                      done(err);
-                    });
-                })
-                .catch(err => {
-                  done(err);
-                });
-            })
-            .catch(err => {
-              done(err);
-            });
-        })
-        .catch(err => {
-          done(err);
-        });
+      const { statusCode, body } = await client.subscriptionsService.getSubscriptionsByChat(
+        subscriptionConstants.validChatId2,
+      );
+      statusCode.should.equal(httpStatus.OK);
+      const subscriptions = body[responseKeys.subscriptionsArrayKey];
+      subscriptions.length.should.equal(2);
+
+      const subscriptionId = _.first(subscriptions)._id;
+      await client.subscriptionService.unSubscribe(subscriptionId);
+
+      const { statusCode: statusCode2, body: body2 } = await client.subscriptionsService.getSubscriptionsByChat(
+        subscriptionConstants.validChatId2,
+      );
+      statusCode2.should.equal(httpStatus.OK);
+      const secondSubscriptions = body2[responseKeys.subscriptionsArrayKey];
+      secondSubscriptions.length.should.equal(1);
     });
   });
 });

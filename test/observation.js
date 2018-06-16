@@ -9,9 +9,9 @@ import IoTClient from "../src/index";
 import serverConstants from "./lib/iot-server/test/constants/measurement";
 import clientConstants from "./constants/measurement";
 import authConstants from "./lib/iot-server/test/constants/auth";
+import "./lib/iot-server/src/index";
 
 const { assert } = chai;
-const should = chai.should();
 const url = `http://localhost:${serverConfig.nodePort}`;
 const basicAuthUsername = Object.keys(serverConfig.basicAuthUsers)[0];
 const basicAuthPassword = serverConfig.basicAuthUsers[basicAuthUsername];
@@ -32,227 +32,226 @@ const clientWithInvalidCredentials = new IoTClient({
 });
 
 describe("Observation", () => {
-  before(done => {
-    TokenHandler.invalidateToken();
-    assert(TokenHandler.getTokenFromStorage() === undefined, "Token should be undefined");
-    UserModel.remove({}, err => {
-      assert(err !== undefined, "Error cleaning MongoDB for tests");
-      client.authService
-        .createUser(authConstants.validUser)
-        .then(() => {
-          done();
-        })
-        .catch(() => {
-          done(err);
-        });
-    });
+  before(async () => {
+    await TokenHandler.invalidateToken();
+    assert((await TokenHandler.getToken()) === undefined, "Token should be undefined");
+    await UserModel.remove({});
+    await client.authService.createUser(authConstants.validUser);
   });
 
-  beforeEach(done => {
+  beforeEach(async () => {
     const promises = [MeasurementModel.remove({}), redisClient.flushall()];
-    Promise.all(promises)
-      .then(() => {
-        done();
-      })
-      .catch(err => {
-        done(err);
-      });
+    await Promise.all(promises);
   });
 
   describe("POST /measurement 401", () => {
-    it("tries to create a measurement with invalid credentials", done => {
-      const promise = clientWithInvalidCredentials.measurementService.create(serverConstants.temperatureMeasurement);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.UNAUTHORIZED).and.notify(done);
+    it("tries to create a measurement with invalid credentials", async () => {
+      try {
+        const { statusCode } = await clientWithInvalidCredentials.measurementService.create(
+          serverConstants.temperatureMeasurement,
+        );
+        assert.fail(statusCode, httpStatus.UNAUTHORIZED, "Request should return 401 Unauthorized");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.UNAUTHORIZED);
+      }
     });
   });
 
   describe("GET /measurement/stats 401", () => {
-    it("tries to get stats with invalid credentials", done => {
-      const promise = clientWithInvalidCredentials.measurementService.getStats();
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.UNAUTHORIZED).and.notify(done);
+    it("tries to get stats with invalid credentials", async () => {
+      try {
+        const { statusCode } = await clientWithInvalidCredentials.measurementService.getStats();
+        assert.fail(statusCode, httpStatus.UNAUTHORIZED, "Request should return 401 Unauthorized");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.UNAUTHORIZED);
+      }
     });
   });
 
   describe("POST /measurement 400", () => {
-    it("tries to create an invalid measurement", done => {
-      const promise = client.measurementService.create(serverConstants.invalidMeasurementRequest);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("tries to create an invalid measurement", async () => {
+      try {
+        const { statusCode } = await client.measurementService.create(serverConstants.invalidMeasurementRequest);
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe("POST /measurement 200", () => {
-    it("creates a measurement", done => {
-      const promise = client.measurementService.create(serverConstants.validMeasurementRequestWithThingInNYC);
-      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.CREATED).and.notify(done);
+    it("creates a measurement", async () => {
+      const { statusCode } = await client.measurementService.create(
+        serverConstants.validMeasurementRequestWithThingInNYC,
+      );
+      statusCode.should.equal(httpStatus.CREATED);
     });
   });
 
   describe("GET /measurement/stats?startDate=X&endDate=Y 400", () => {
-    it("gets stats by a bad specified date range", done => {
-      const startDate = new Date();
-      startDate.setHours(startDate.getHours() + 10);
-      const endDate = new Date();
-      endDate.setHours(endDate.getHours() + 5);
-      const promise = client.measurementService.getStats({
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-      });
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.BAD_REQUEST).and.notify(done);
+    it("gets stats by a bad specified date range", async () => {
+      try {
+        const startDate = new Date();
+        startDate.setHours(startDate.getHours() + 10);
+        const endDate = new Date();
+        endDate.setHours(endDate.getHours() + 5);
+        const { statusCode } = await client.measurementService.getStats({
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        });
+        assert.fail(statusCode, httpStatus.BAD_REQUEST, "Request should return 400 Bad Request");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe("GET /measurement/stats 404", () => {
-    it("gets stats but no measurements have been created", done => {
-      const promise = client.measurementService.getStats();
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("gets stats but no measurements have been created", async () => {
+      try {
+        const { statusCode } = await client.measurementService.getStats();
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
   });
 
   describe("GET /measurement/stats?queryParam=X 404", () => {
-    beforeEach(done => {
+    beforeEach(async () => {
       const promises = [
         client.measurementService.create(serverConstants.validMeasurementRequestWithThingInNYC),
         client.measurementService.create(serverConstants.validMeasurementRequestWithThingInCoruna),
       ];
-      Promise.all(promises)
-        .then(() => {
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      await Promise.all(promises);
     });
-    it("gets stats by type but no one is available", done => {
-      const promise = client.measurementService.getStatsByType(clientConstants.notAvailableType);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("gets stats by type but no one is available", async () => {
+      try {
+        const { statusCode } = await client.measurementService.getStatsByType(clientConstants.notAvailableType);
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
-    it("gets stats by thing but no one is available", done => {
-      const promise = client.measurementService.getStatsByThing(clientConstants.notAvailableThing);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("gets stats by thing but no one is available", async () => {
+      try {
+        const { statusCode } = await client.measurementService.getStatsByThing(clientConstants.notAvailableThing);
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
-    it("gets stats by date range but no one is available", done => {
-      const startDate = new Date();
-      startDate.setHours(startDate.getHours() + 5);
-      const endDate = new Date();
-      endDate.setHours(endDate.getHours() + 10);
-      const promise = client.measurementService.getStatsByDateRange(startDate.toISOString(), endDate.toISOString());
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("gets stats by date range but no one is available", async () => {
+      try {
+        const startDate = new Date();
+        startDate.setHours(startDate.getHours() + 5);
+        const endDate = new Date();
+        endDate.setHours(endDate.getHours() + 10);
+        const { statusCode } = await client.measurementService.getStatsByDateRange(
+          startDate.toISOString(),
+          endDate.toISOString(),
+        );
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
-    it("gets stats by coordinates but no one is available", done => {
-      const promise = client.measurementService.getStatsByCoordinates(
-        clientConstants.notAvailableCoordinates.longitude,
-        clientConstants.notAvailableCoordinates.latitude,
-        100,
-      );
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("gets stats by coordinates but no one is available", async () => {
+      try {
+        const { statusCode } = await client.measurementService.getStatsByCoordinates(
+          clientConstants.notAvailableCoordinates.longitude,
+          clientConstants.notAvailableCoordinates.latitude,
+          100,
+        );
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
-    it("gets stats by address but no one is available", done => {
-      const promise = client.measurementService.getStatsByAddress(clientConstants.notAvailableAddress, 100);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("gets stats by address but no one is available", async () => {
+      try {
+        const { statusCode } = await client.measurementService.getStatsByAddress(
+          clientConstants.notAvailableAddress,
+          100,
+        );
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
   });
 
   describe("GET /measurement/stats 200", () => {
-    beforeEach(done => {
+    beforeEach(async () => {
       const promises = [
         client.measurementService.create(serverConstants.validMeasurementRequestWithThingInNYC),
         client.measurementService.create(serverConstants.validMeasurementRequestWithThingInCoruna),
       ];
-      Promise.all(promises)
-        .then(() => {
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      await Promise.all(promises);
     });
-    it("gets stats", done => {
-      const promise = client.measurementService.getStats();
-      promise
-        .then(result => {
-          result.statusCode.should.be.equal(httpStatus.OK);
-          should.exist(result.body);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+    it("gets stats", async () => {
+      const { statusCode } = await client.measurementService.getStats();
+      statusCode.should.equal(httpStatus.OK);
+    });
+    it("gets stats by time period", async () => {
+      const { statusCode } = await client.measurementService.getStatsByTimePeriod(clientConstants.timePeriod);
+      statusCode.should.equal(httpStatus.OK);
     });
   });
 
   describe("GET /measurement/stats?queryParam=X 200", () => {
-    beforeEach(done => {
+    beforeEach(async () => {
       const promises = [
         client.measurementService.create(serverConstants.validMeasurementRequestWithThingInNYC),
         client.measurementService.create(serverConstants.validMeasurementRequestWithThingInCoruna),
       ];
-      Promise.all(promises)
-        .then(() => {
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      await Promise.all(promises);
     });
-    it("gets stats by type", done => {
-      const promise = client.measurementService.getStatsByType(clientConstants.availableType);
-      promise
-        .then(result => {
-          result.statusCode.should.be.equal(httpStatus.OK);
-          should.exist(result.body);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+    it("gets stats by type", async () => {
+      const { statusCode } = await client.measurementService.getStatsByType(clientConstants.availableType);
+      statusCode.should.equal(httpStatus.OK);
     });
-    it("gets stats by thing", done => {
-      const promise = client.measurementService.getStatsByThing(clientConstants.availableThing);
-      promise
-        .then(result => {
-          result.statusCode.should.be.equal(httpStatus.OK);
-          should.exist(result.body);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+    it("gets stats by thing", async () => {
+      const { statusCode } = await client.measurementService.getStatsByThing(clientConstants.availableThing);
+      statusCode.should.equal(httpStatus.OK);
     });
-    it("gets stats by date", done => {
+    it("gets stats by date", async () => {
       const startDate = new Date();
       startDate.setHours(startDate.getHours() - 5);
       const endDate = new Date();
       endDate.setHours(endDate.getHours() + 10);
-      const promise = client.measurementService.getStatsByDateRange(startDate.toISOString(), endDate.toISOString());
-      promise
-        .then(result => {
-          result.statusCode.should.be.equal(httpStatus.OK);
-          should.exist(result.body);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      const { statusCode } = await client.measurementService.getStatsByDateRange(
+        startDate.toISOString(),
+        endDate.toISOString(),
+      );
+      statusCode.should.equal(httpStatus.OK);
     });
   });
 
   describe("GET /measurement/last?thing=X&type=Y 404", () => {
-    it("tries to get las measurement of a non existing thing", done => {
-      const promise = client.measurementService.getLast(clientConstants.notAvailableThing, client.notAvailableType);
-      promise.should.eventually.be.rejected.and.have.property("statusCode", httpStatus.NOT_FOUND).and.notify(done);
+    it("tries to get las measurement of a non existing thing", async () => {
+      try {
+        const { statusCode } = await client.measurementService.getLast(
+          clientConstants.notAvailableThing,
+          client.notAvailableType,
+        );
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
   });
 
   describe("GET /measurement/last?thing=X&type=Y 200", () => {
-    beforeEach(done => {
-      client.measurementService
-        .create(serverConstants.validMeasurementRequestWithThingInNYC)
-        .then(() => done())
-        .catch(err => done(err));
+    beforeEach(async () => {
+      await client.measurementService.create(serverConstants.validMeasurementRequestWithThingInNYC);
     });
-    it("gets last measurement of a thing", done => {
-      const promise = client.measurementService.getLast(clientConstants.availableThing, client.availableType);
-      promise.should.eventually.be.fulfilled.and.have.property("statusCode", httpStatus.OK).and.notify(done);
+    it("gets last measurement of a thing", async () => {
+      const { statusCode } = await client.measurementService.getLast(
+        clientConstants.availableThing,
+        client.availableType,
+      );
+      statusCode.should.equal(httpStatus.OK);
     });
   });
 });
