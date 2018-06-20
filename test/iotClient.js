@@ -1,6 +1,6 @@
 import chai from "./lib/chai";
 import serverConfig from "./lib/iot-server/src/config/index";
-import IoTClient from "../src/index";
+import { IoTClient } from "../src/index";
 import serverConstants from "./lib/iot-server/test/constants/auth";
 
 const should = chai.should();

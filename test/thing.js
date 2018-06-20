@@ -5,7 +5,7 @@ import serverConfig from "./lib/iot-server/src/config/index";
 import { UserModel } from "./lib/iot-server/src/models/user";
 import { ThingModel } from "./lib/iot-server/src/models/thing";
 import { TokenHandler } from "../src/helpers/tokenHandler";
-import IoTClient from "../src/index";
+import { IoTClient } from "../src/index";
 import constants from "./constants/thing";
 import authConstants from "./lib/iot-server/test/constants/auth";
 import thingConstants from "./lib/iot-server/test/constants/thing";
