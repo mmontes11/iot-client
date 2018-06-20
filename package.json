@@ -46,16 +46,19 @@
   },
   "homepage": "https://github.com/mmontes11/iot-client#readme",
   "dependencies": {
+    "babel-runtime": "^6.26.0",
     "http-status": "^1.0.1",
     "node-persist": "^3.0.1",
     "restler": "^3.4.0",
     "underscore": "^1.9.0",
-    "winston": "^2.4.2"
+    "winston": "^2.4.2",
+    "winston-transport": "^4.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-plugin-istanbul": "^4.1.6",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-register": "^6.26.0",

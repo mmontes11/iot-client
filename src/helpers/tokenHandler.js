@@ -1,10 +1,11 @@
 import nodePersist from "node-persist";
+import { MultiPlatformHelper } from "./multiPlatformHelper";
 
 const tokenKey = "token";
 
 export class TokenHandler {
   static async initStorage() {
-    if (!TokenHandler._isBrowserStorageAvailable()) {
+    if (MultiPlatformHelper.isNode()) {
       await nodePersist.init();
     }
   }
@@ -21,12 +22,9 @@ export class TokenHandler {
     await storage.clear();
   }
   static _getStorage() {
-    if (TokenHandler._isBrowserStorageAvailable()) {
+    if (MultiPlatformHelper.isBrowser()) {
       return window.localStorage;
     }
     return nodePersist;
-  }
-  static _isBrowserStorageAvailable() {
-    return typeof window !== "undefined";
   }
 }

@@ -1,8 +1,13 @@
 import winston from "winston";
+import { MultiPlatformHelper } from "../helpers/multiPlatformHelper";
+import { BrowserConsole } from "../util/browserConsole";
 
-const logger = new winston.Logger({
-  level: "info",
-  transports: [
+let transports = [];
+
+if (MultiPlatformHelper.isBrowser()) {
+  transports = [new BrowserConsole()];
+} else {
+  transports = [
     new winston.transports.Console({
       timestamp: false,
       json: false,
@@ -14,7 +19,12 @@ const logger = new winston.Logger({
       colorize: true,
       filename: "log-iot-client.log",
     }),
-  ],
+  ];
+}
+
+const logger = new winston.Logger({
+  level: "info",
+  transports,
 });
 
 export default logger;
