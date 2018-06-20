@@ -3,5 +3,8 @@
     "mocha": true,
     "browser": true
   },
-  "extends": ["mmontes11-node"]
+  "extends": ["mmontes11-node"],
+  "rules": {
+    "no-console": ["error", { "allow": ["warn", "error", "info"] }]
+  }
 }

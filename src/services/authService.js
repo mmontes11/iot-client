@@ -1,4 +1,3 @@
-import _ from "underscore";
 import { Service } from "./service";
 import { TokenHandler } from "../helpers/tokenHandler";
 
@@ -16,19 +15,18 @@ export class AuthService extends Service {
   }
   async getToken() {
     const tokenFromStorage = await TokenHandler.getToken();
-    if (_.isUndefined(tokenFromStorage)) {
-      try {
-        const {
-          body: { token },
-        } = await this._getToken();
-        await TokenHandler.storeToken(token);
-        return token;
-      } catch (err) {
-        await TokenHandler.invalidateToken();
-        throw err;
-      }
-    } else {
+    if (tokenFromStorage) {
       return tokenFromStorage;
+    }
+    try {
+      const {
+        body: { token },
+      } = await this._getToken();
+      await TokenHandler.storeToken(token);
+      return token;
+    } catch (err) {
+      await TokenHandler.invalidateToken();
+      throw err;
     }
   }
   async _postWithBasicAuthCredentials(path, data) {

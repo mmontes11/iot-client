@@ -102,7 +102,7 @@ describe("Observations", () => {
   });
 
   describe("POST /observations 207", () => {
-    it("creates observations and also tries to createUser invalid ones", async () => {
+    it("creates observations and tries to create invalid ones", async () => {
       const measurements = [
         observationConstants.validMeasurementWithKind,
         observationConstants.validMeasurementWithInvalidKind,
