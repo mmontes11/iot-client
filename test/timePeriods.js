@@ -3,7 +3,7 @@ import chai from "./lib/chai";
 import serverConfig from "./lib/iot-server/src/config/index";
 import { UserModel } from "./lib/iot-server/src/models/user";
 import { TokenHandler } from "../src/helpers/tokenHandler";
-import IoTClient from "../src/index";
+import { IoTClient } from "../src/index";
 import authConstants from "./lib/iot-server/test/constants/auth";
 import "./lib/iot-server/src/index";
 

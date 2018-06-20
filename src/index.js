@@ -13,7 +13,7 @@ import { TokenHandler } from "./helpers/tokenHandler";
 import { Log } from "./util/log";
 import defaultOptions from "./config/defaultOptions";
 
-export default class IoTClient {
+export class IoTClient {
   constructor(optionsByParam) {
     this.mandatoryParams = ["url", "basicAuthUsername", "basicAuthPassword", "username", "password"];
     if (this._areValidOptions(optionsByParam)) {
