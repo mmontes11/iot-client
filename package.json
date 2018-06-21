@@ -51,7 +51,7 @@
     "node-persist": "^3.0.1",
     "restler": "^3.4.0",
     "underscore": "^1.9.0",
-    "winston": "^2.4.2",
+    "winston": "^3.0.0",
     "winston-transport": "^4.2.0"
   },
   "devDependencies": {
