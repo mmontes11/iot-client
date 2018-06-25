@@ -153,4 +153,29 @@ describe("Auth", () => {
       should.not.exist(await TokenHandler.getToken());
     });
   });
+
+  describe("Provides auth after library initialization", () => {
+    const clientNoAuth = new IoTClient({
+      url,
+      basicAuthUsername,
+      basicAuthPassword,
+    });
+    it("should have no auth", async () => {
+      (await clientNoAuth.authService.isAuth()).should.equal(false);
+    });
+    it("should raise an error when attempting to obtain a token", async () => {
+      try {
+        await clientNoAuth.authService.getToken();
+        assert(false, "It should raise an error");
+      } catch (err) {
+        should.exist(err);
+      }
+    });
+    it("gets a token after setting credentials", async () => {
+      clientNoAuth.authService.setCredentials(username, password);
+      const token = await clientNoAuth.authService.getToken();
+      should.exist(token);
+      (await clientNoAuth.authService.isAuth()).should.equal(true);
+    });
+  });
 });

@@ -1,5 +1,7 @@
+import _ from "underscore";
 import { Service } from "./service";
 import { TokenHandler } from "../helpers/tokenHandler";
+import { Credentials } from "../models/credentials";
 
 export class AuthService extends Service {
   constructor(client, basicAuthCredentials, userCredentials) {
@@ -9,6 +11,10 @@ export class AuthService extends Service {
   }
   async checkAuth(user) {
     return this._postWithBasicAuthCredentials(undefined, user);
+  }
+  async isAuth() {
+    const token = TokenHandler.getToken();
+    return !_.isUndefined(token) && !_.isNull(token) && !_.isUndefined(this.userCredentials);
   }
   async createUser(user) {
     return this._postWithBasicAuthCredentials("user", user);
@@ -29,6 +35,9 @@ export class AuthService extends Service {
       throw err;
     }
   }
+  setCredentials(username, password) {
+    this.userCredentials = new Credentials(username, password);
+  }
   async _postWithBasicAuthCredentials(path, data) {
     const basicAuthOptions = {
       username: this.basicAuthCredentials.username,
@@ -37,10 +46,14 @@ export class AuthService extends Service {
     return this.post(path, basicAuthOptions, data, false);
   }
   async _getToken() {
-    const user = {
-      username: this.userCredentials.username,
-      password: this.userCredentials.password,
-    };
-    return this._postWithBasicAuthCredentials("token", user);
+    if (_.isUndefined(this.userCredentials)) {
+      throw new Error("Credentials not provided");
+    } else {
+      const user = {
+        username: this.userCredentials.username,
+        password: this.userCredentials.password,
+      };
+      return this._postWithBasicAuthCredentials("token", user);
+    }
   }
 }
