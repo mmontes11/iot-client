@@ -28,6 +28,14 @@ describe("IoT Client", () => {
         url,
         basicAuthUsername,
         basicAuthPassword,
+      });
+      should.exist(iotClient);
+    });
+    it("creates an instance of IoT Client providing auth", () => {
+      const iotClient = new IoTClient({
+        url,
+        basicAuthUsername,
+        basicAuthPassword,
         username,
         password,
       });
