@@ -13,7 +13,7 @@ export class AuthService extends Service {
     return this._postWithBasicAuthCredentials(undefined, user);
   }
   async isAuth() {
-    const token = TokenHandler.getToken();
+    const token = await TokenHandler.getToken();
     return !_.isUndefined(token) && !_.isNull(token) && !_.isUndefined(this.userCredentials);
   }
   async createUser(user) {
