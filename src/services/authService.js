@@ -14,7 +14,7 @@ export class AuthService extends Service {
   }
   async isAuth() {
     const token = await TokenHandler.getToken();
-    return !_.isUndefined(token) && !_.isNull(token) && !_.isUndefined(this.userCredentials);
+    return !_.isUndefined(token) && !_.isNull(token);
   }
   async createUser(user) {
     return this._postWithBasicAuthCredentials("user", user);
