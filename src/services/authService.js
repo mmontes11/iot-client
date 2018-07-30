@@ -38,6 +38,9 @@ export class AuthService extends Service {
   setCredentials(username, password) {
     this.userCredentials = new Credentials(username, password);
   }
+  logout() {
+    return TokenHandler.invalidateToken();
+  }
   async _postWithBasicAuthCredentials(path, data) {
     const basicAuthOptions = {
       username: this.basicAuthCredentials.username,

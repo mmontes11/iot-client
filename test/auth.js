@@ -32,7 +32,7 @@ const clientWithInvalidCredentials = new IoTClient({
 
 describe("Auth", () => {
   beforeEach(async () => {
-    await TokenHandler.invalidateToken();
+    await client.authService.logout();
     assert((await TokenHandler.getToken()) === undefined, "Token should be undefined");
     await UserModel.remove({});
     await client.authService.createUser(serverConstants.validUser);
