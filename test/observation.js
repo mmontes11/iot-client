@@ -168,17 +168,6 @@ describe("Observation", () => {
         statusCode.should.equal(httpStatus.NOT_FOUND);
       }
     });
-    it("gets stats by address but no one is available", async () => {
-      try {
-        const { statusCode } = await client.measurementService.getStatsByAddress(
-          clientConstants.notAvailableAddress,
-          100,
-        );
-        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
-      } catch ({ statusCode }) {
-        statusCode.should.equal(httpStatus.NOT_FOUND);
-      }
-    });
   });
 
   describe("GET /measurement/stats 200", () => {
