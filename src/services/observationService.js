@@ -37,6 +37,9 @@ class ObservationService extends Service {
     };
     return this.get("last", options);
   }
+  async getTypes() {
+    return this.get("types");
+  }
 }
 
 class EventService extends ObservationService {
