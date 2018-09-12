@@ -168,17 +168,6 @@ describe("Observation", () => {
         statusCode.should.equal(httpStatus.NOT_FOUND);
       }
     });
-    it("gets stats by address but no one is available", async () => {
-      try {
-        const { statusCode } = await client.measurementService.getStatsByAddress(
-          clientConstants.notAvailableAddress,
-          100,
-        );
-        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
-      } catch ({ statusCode }) {
-        statusCode.should.equal(httpStatus.NOT_FOUND);
-      }
-    });
   });
 
   describe("GET /measurement/stats 200", () => {
@@ -252,6 +241,27 @@ describe("Observation", () => {
         client.availableType,
       );
       statusCode.should.equal(httpStatus.OK);
+    });
+  });
+
+  describe("GET /measurement/types 200", () => {
+    beforeEach(async () => {
+      await client.measurementService.create(serverConstants.validMeasurementRequestWithThingInNYC);
+    });
+    it("gets measurement types", async () => {
+      const { statusCode } = await client.measurementService.getTypes();
+      statusCode.should.equal(httpStatus.OK);
+    });
+  });
+
+  describe("GET /measurement/types 404", () => {
+    it("tries to get measurement types but no one has been created yet", async () => {
+      try {
+        const { statusCode } = await client.measurementService.getTypes();
+        assert.fail(statusCode, httpStatus.NOT_FOUND, "Request should return 404 Not Found");
+      } catch ({ statusCode }) {
+        statusCode.should.equal(httpStatus.NOT_FOUND);
+      }
     });
   });
 });

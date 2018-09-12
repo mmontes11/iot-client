@@ -29,7 +29,7 @@ $ npm i --save @mmontes11/iot-client
 ### Usage
 
 ```javascript
-import IoTClient from "@mmontes11/iot-client";
+import { IoTClient } from "@mmontes11/iot-client";
 
 const iotClient = new IoTClient({
   url: 'http://localhost:8000',
