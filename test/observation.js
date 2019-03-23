@@ -264,4 +264,14 @@ describe("Observation", () => {
       }
     });
   });
+
+  describe("GET /measurement 200", () => {
+    beforeEach(async () => {
+      await client.measurementService.create(serverConstants.validMeasurementRequestWithThingInNYC);
+    });
+    it("gets measurement data", async () => {
+      const { statusCode } = await client.measurementService.getData();
+      statusCode.should.equal(httpStatus.OK);
+    });
+  });
 });
