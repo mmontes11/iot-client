@@ -4,6 +4,12 @@ class ObservationService extends Service {
   async create(observation) {
     return this.post(undefined, undefined, observation);
   }
+  async getData(query) {
+    const options = {
+      query,
+    };
+    return this.get(undefined, options);
+  }
   async getStats(query) {
     const options = {
       query,

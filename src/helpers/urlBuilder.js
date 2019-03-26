@@ -3,6 +3,9 @@ export class URLBuilder {
     this.resourceUrl = `${url}/${resource}`;
   }
   build(path) {
-    return `${this.resourceUrl}/${path}`;
+    if (path) {
+      return `${this.resourceUrl}/${path}`;
+    }
+    return `${this.resourceUrl}`;
   }
 }
